@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "stripessandbox",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authstripessandbox9f7545ba",
+      "Outputs.UserPoolId"
+    ]
+  }
+}
