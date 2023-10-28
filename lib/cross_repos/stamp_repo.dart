@@ -146,6 +146,7 @@ class Stamps extends StampRepo<repo.Response> {
         await Amplify.API.mutate(request: createLog).response;
       }
       blueDyeResponses.add(response);
+      _emit();
     } catch (e) {
       safePrint(e);
     }

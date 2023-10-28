@@ -855,7 +855,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e1af3f661115cab095305d4de49f21c765b236cb
+      resolved-ref: "3bfd68eaec5f04e4097e32f3afb5021e942529c2"
       url: "https://github.com/dylanb7/stripes_backend_helper"
     source: git
     version: "0.0.1"
@@ -864,7 +864,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "02cefb0b404f24f9e4353ed17ea66b8ef57e24ed"
+      resolved-ref: a2988181f7859509407dbcd28ce509df087b3212
       url: "https://github.com/dylanb7/stripes_ui"
     source: git
     version: "1.0.2"

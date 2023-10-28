@@ -31,6 +31,9 @@ class MyApp extends StatelessWidget {
           builder: Authenticator.builder(),
           strat: AuthStrat.accessCodeEmail,
           repos: CrossRepoPackage(),
+          removeTrace: () async {
+            await Amplify.Auth.deleteUser();
+          },
           entryOverrides: {
             q4: QuestionEntry(
                 isSeparateScreen: true,
