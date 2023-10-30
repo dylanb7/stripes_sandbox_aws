@@ -49,7 +49,10 @@ class Stamps extends StampRepo<repo.Response> {
   }
 
   fetchStamps() async {
-    final int earlist = earliest?.millisecondsSinceEpoch ?? 0;
+    final TemporalDateTime earlist = earliest != null
+        ? TemporalDateTime(earliest!)
+        : TemporalDateTime(DateTime(0));
+
     final GraphQLRequest<PaginatedResult<DetailResponse>> detailQuery =
         ModelQueries.list(DetailResponse.classType,
             where: DetailResponse.STAMP
@@ -71,6 +74,7 @@ class Stamps extends StampRepo<repo.Response> {
     try {
       final GraphQLResponse<PaginatedResult<DetailResponse>> detailResult =
           await Amplify.API.query(request: detailQuery).response;
+
       if (detailResult.data != null) {
         final List<DetailResponse?> cleaned = [];
         for (DetailResponse? response in detailResult.data!.items) {
@@ -124,6 +128,7 @@ class Stamps extends StampRepo<repo.Response> {
       }
       _emit();
     } catch (e) {
+      print('caught');
       safePrint(e);
     }
   }
@@ -251,16 +256,76 @@ class Stamps extends StampRepo<repo.Response> {
   @override
   updateStamp(Stamp stamp) async {
     if (stamp is BlueDyeResp) {
-      return;
+      throw UnimplementedError();
     }
-    await removeStamp(stamp);
-    await addStamp(stamp);
+
     if (stamp is repo.DetailResponse) {
-      details.add(detailToQuery(stamp, fromLocal(currentUser)));
+      final DetailResponse toUpdate =
+          detailToQuery(stamp, fromLocal(currentUser));
+      final GraphQLRequest<DetailResponse> existsRequest = ModelQueries.get(
+          DetailResponse.classType,
+          DetailResponseModelIdentifier(id: toUpdate.id));
+      try {
+        final GraphQLResponse<DetailResponse> exists =
+            await Amplify.API.query(request: existsRequest).response;
+        if (exists.data == null) return;
+        final DetailResponse updateComparison =
+            toUpdate.copyWith(responses: []);
+        if (exists.data != updateComparison) {
+          final GraphQLRequest<DetailResponse> updateRequest =
+              ModelMutations.update(toUpdate);
+          final GraphQLResponse<DetailResponse> updateResponse =
+              await Amplify.API.mutate(request: updateRequest).response;
+          if (updateResponse.data == null) {
+            return;
+          }
+        }
+        final int index =
+            details.indexWhere((element) => element.id == exists.data!.id);
+        final List<Response> currentChildren =
+            index == -1 ? [] : details[index].responses ?? [];
+        for (Response res in currentChildren) {
+          final GraphQLRequest<Response> deleteRequest =
+              ModelMutations.delete(res);
+          await Amplify.API.mutate(request: deleteRequest).response;
+        }
+        final List<Response> created = [];
+        for (Response childCreate in toUpdate.responses ?? []) {
+          final Response childToCreate =
+              childCreate.copyWith(detailResponse: toUpdate);
+          final GraphQLRequest<Response> createRequest =
+              ModelMutations.create(childToCreate);
+          final GraphQLResponse<Response> createResponse =
+              await Amplify.API.mutate(request: createRequest).response;
+          if (createResponse.data != null) {
+            created.add(createResponse.data!);
+          }
+        }
+        final DetailResponse toAdd = toUpdate.copyWith(responses: created);
+        final int addIndex =
+            details.indexWhere((element) => element.id == toAdd.id);
+        if (addIndex != -1) {
+          details[addIndex] = toAdd;
+          _emit();
+        }
+      } catch (e) {
+        safePrint(e);
+      }
     } else if (stamp is repo.Response) {
-      responses.add(responseToQuery(stamp, currentUser.uid));
+      final Response toUpdate = responseToQuery(stamp, currentUser.uid);
+      final GraphQLRequest<Response> updateRequest =
+          ModelMutations.update(toUpdate);
+      try {
+        final GraphQLResponse<Response> update =
+            await Amplify.API.mutate(request: updateRequest).response;
+        if (update.data != null) {
+          responses.add(update.data!);
+          _emit();
+        }
+      } catch (e) {
+        safePrint(e);
+      }
     }
-    _emit();
   }
 
   @override
