@@ -19,7 +19,7 @@ import 'package:stripes_sandbox_aws/models/Response.dart';
 import 'package:stripes_sandbox_aws/models/SubUser.dart';
 
 BlueDyeResp blueDyeFromQuery(BlueDyeResponse blueDye) {
-  final List<BlueDyeResponseLog> logs = blueDye.logs!;
+  final List<BlueDyeResponseLog> logs = blueDye.logs ?? [];
   final BlueDyeResponseLog firstBlue = logs.firstWhere((val) => val.isBlue,
       orElse: () => BlueDyeResponseLog(isBlue: false));
   final BlueDyeResponseLog lastBlue = logs.lastWhere((val) => val.isBlue,
@@ -53,7 +53,7 @@ local.SubUser toLocal(SubUser user) => local.SubUser(
     isControl: user.isControl);
 
 repo.Response responseFromQuery(Response response, QuestionRepo questionRepo) {
-  final Question question = questionRepo.questions.fromID(response.qid);
+  final Question question = questionRepo.questions.fromBank(response.qid);
   final int responseStamp =
       response.stamp.getDateTimeInUtc().millisecondsSinceEpoch;
   if (response.textResponse != null) {
@@ -143,7 +143,7 @@ DetailResponse detailToQuery(repo.DetailResponse detailResponse, SubUser user) {
   );
   final List<Response> children = detailResponse.responses
       .map((response) => responseToQuery(response, user.id)
-          .copyWith(detailResponse: noChildren))
+          .copyWith(detailResponseID: detailResponse.id))
       .toList();
   return noChildren.copyWith(responses: children);
 }
@@ -161,10 +161,10 @@ repo.DetailResponse detailFromQuery(
       detailType: response.type ?? "");
 }
 
-BlueDyeTest localTestToQuery(test.BlueDyeTest test, local.SubUser subUser) {
+BlueDyeTest localTestToQuery(test.BlueDyeObj test, local.SubUser subUser) {
   final BlueDyeTest blueDyeTest = BlueDyeTest(
     id: test.id,
-    stamp: TemporalDateTime(test.startTime),
+    stamp: TemporalDateTime(test.startTime ?? DateTime.now()),
     finishedEating: test.finishedEating?.inMilliseconds,
     subUser: fromLocal(subUser),
   );
@@ -181,7 +181,7 @@ BlueDyeTest localTestToQuery(test.BlueDyeTest test, local.SubUser subUser) {
   return blueDyeTest.copyWith(logs: testLogs);
 }
 
-test.BlueDyeTest queryToLocalTest(
+test.BlueDyeObj queryToLocalTest(
     BlueDyeTest blueDyeTest, QuestionRepo questionRepo) {
   final List<BMTestLog> logs = blueDyeTest.logs
           ?.map((log) => BMTestLog(
@@ -190,7 +190,7 @@ test.BlueDyeTest queryToLocalTest(
               isBlue: log.isBlue))
           .toList() ??
       [];
-  return test.BlueDyeTest(
+  return test.BlueDyeObj(
       id: blueDyeTest.id,
       startTime: blueDyeTest.stamp.getDateTimeInUtc().toLocal(),
       finishedEating: blueDyeTest.finishedEating != null

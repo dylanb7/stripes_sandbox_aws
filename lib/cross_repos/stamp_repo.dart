@@ -1,15 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-
-import 'package:stripes_backend_helper/RepositoryBase/StampBase/base_stamp_repo.dart';
-import 'package:stripes_backend_helper/RepositoryBase/StampBase/stamp.dart';
-
-import 'package:stripes_backend_helper/RepositoryBase/TestBase/BlueDye/blue_dye_response.dart';
+import 'package:rxdart/subjects.dart';
 
 import 'package:stripes_backend_helper/QuestionModel/response.dart' as repo;
-import 'package:stripes_sandbox_aws/cross_repos/query_utils.dart';
+import 'package:stripes_backend_helper/RepositoryBase/StampBase/base_stamp_repo.dart';
+import 'package:stripes_backend_helper/RepositoryBase/StampBase/stamp.dart';
+import 'package:stripes_backend_helper/RepositoryBase/TestBase/BlueDye/blue_dye_response.dart';
+import 'package:stripes_backend_helper/date_format.dart';
+
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponseLog.dart';
 import 'package:stripes_sandbox_aws/models/DetailResponse.dart';
@@ -21,7 +22,7 @@ class Stamps extends StampRepo<repo.Response> {
   List<Response> responses = [];
   List<BlueDyeResponse> blueDyeResponses = [];
 
-  final StreamController<List<repo.Response>> _controller = StreamController();
+  final BehaviorSubject<List<repo.Response>> _controller = BehaviorSubject();
 
   Stamps(
       {required super.authUser,
@@ -48,10 +49,123 @@ class Stamps extends StampRepo<repo.Response> {
     _controller.add(newStamps);
   }
 
-  fetchStamps() async {
-    final TemporalDateTime earlist = earliest != null
+  fetchStamps({bool includePrevious = false}) async {
+    final TemporalDateTime earliestTime = earliest != null
         ? TemporalDateTime(earliest!)
         : TemporalDateTime(DateTime(0));
+
+    const fetchResponses = "listResponses";
+    const fetchDetails = "listDetailResponses";
+    const fetchBlueResponses = "listBlueDyeResponses";
+
+    const gqlDocument = '''query FetchStamps(\$subId: ID!) {
+      $fetchResponses(
+        filter: { 
+          subUserId: { 
+            eq: \$subId 
+          }, 
+          detailResponseID: {
+            attributeExists: false
+          },
+        }) {
+        items {
+          id
+          stamp
+          type
+          qid
+          textResponse
+          selected
+          numeric
+          all_selected
+        }
+      }
+      $fetchDetails(
+        filter: { 
+          subUserId: { 
+            eq: \$subId 
+          },
+          
+        }) {
+        items {
+          id
+          stamp
+          type
+          description
+          subUserId
+          responses {
+            items {
+              id
+              stamp
+              type
+              qid
+              textResponse
+              selected
+              numeric
+              all_selected
+            }
+          } 
+        }
+      }
+      $fetchBlueResponses(
+        filter: { 
+          subUserId: { 
+            eq: \$subId 
+          }, 
+        }) {
+        items {
+          id
+          stamp
+          finishedEating
+          subUserId
+          logs {
+            items {
+              id
+              isBlue
+              response {
+                id
+                stamp
+                type
+                description
+                subUserId
+                responses {
+                  items {
+                    id
+                    stamp
+                    type
+                    qid
+                    textResponse
+                    selected
+                    numeric
+                    all_selected
+                  }
+                } 
+              }
+            }
+          }
+        }
+      }
+    }''';
+
+    final int? earliestResponseTime =
+        _controller.hasValue && _controller.value.isNotEmpty
+            ? _controller.value.last.stamp
+            : null;
+    final TemporalDateTime? previous =
+        includePrevious && earliestResponseTime != null
+            ? TemporalDateTime(dateFromStamp(earliestResponseTime))
+            : null;
+    GraphQLRequest stampsRequest = GraphQLRequest(
+      document: gqlDocument,
+      variables: {
+        "subId": currentUser.uid,
+        "earliest": earliestTime.format(),
+        "previousEarliest": previous?.format()
+      },
+    );
+
+/*
+    ModelQueries.get(
+        SubUser.classType, SubUserModelIdentifier(id: currentUser.uid));
 
     final GraphQLRequest<PaginatedResult<DetailResponse>> detailQuery =
         ModelQueries.list(DetailResponse.classType,
@@ -70,9 +184,109 @@ class Stamps extends StampRepo<repo.Response> {
             where: BlueDyeResponse.STAMP
                 .ge(earlist)
                 .and(BlueDyeResponse.SUBUSERID.eq(currentUser.uid)));
+                */
+
+    List<DetailResponse> parseDetail(Map<String, dynamic> detailResponsesBlob) {
+      if (!detailResponsesBlob.containsKey("items")) return [];
+      List<dynamic> items = detailResponsesBlob["items"];
+      final List<DetailResponse> ret = [];
+      for (final item in items) {
+        DetailResponse res = DetailResponse.fromJson(item);
+        if (item.containsKey("responses")) {
+          PaginatedResult<Response> children =
+              const PaginatedModelType(Response.classType)
+                  .fromJson(item["responses"]);
+          res = res.copyWith(
+              responses: children.items.whereType<Response>().toList());
+        }
+        ret.add(res);
+      }
+
+      return ret;
+    }
+
+    List<BlueDyeResponse> parseBlue(Map<String, dynamic> blueResponsesBlob) {
+      if (!blueResponsesBlob.containsKey("items")) return [];
+      List<dynamic> items = blueResponsesBlob["items"];
+      final List<BlueDyeResponse> ret = [];
+      for (final item in items) {
+        BlueDyeResponse res = BlueDyeResponse.fromJson(item);
+        if (item.containsKey("logs")) {
+          List<dynamic> logsBlob = item["logs"]["items"];
+          final List<BlueDyeResponseLog> blueLogs = [];
+
+          for (final log in logsBlob) {
+            final Map<String, dynamic> logMap =
+                (log as Map).cast<String, dynamic>();
+            BlueDyeResponseLog resToAdd = BlueDyeResponseLog.fromJson(logMap);
+            if (logMap.containsKey("response")) {
+              final Map<String, dynamic> detailMap =
+                  (logMap["response"] as Map).cast<String, dynamic>();
+              final List<Response> responsesToAdd = [];
+
+              if (detailMap.containsKey("responses")) {
+                for (final resBlob in detailMap["responses"]["items"] as List) {
+                  final Map<String, dynamic> resMap =
+                      (resBlob as Map).cast<String, dynamic>();
+
+                  responsesToAdd.add(Response.fromJson(resMap));
+                }
+              }
+              final DetailResponse logDetail =
+                  DetailResponse.fromJson(detailMap)
+                      .copyWith(responses: responsesToAdd);
+
+              resToAdd = resToAdd.copyWith(response: logDetail);
+            }
+
+            blueLogs.add(resToAdd);
+          }
+          res = res.copyWith(logs: blueLogs);
+        }
+        ret.add(res);
+      }
+
+      return ret;
+    }
 
     try {
-      final GraphQLResponse<PaginatedResult<DetailResponse>> detailResult =
+      final GraphQLResponse response =
+          await Amplify.API.query(request: stampsRequest).response;
+      if (response.data == null) return;
+      final jsonData =
+          (json.decode(response.data) as Map).cast<String, Object?>();
+
+      final responsesBlob =
+          (jsonData[fetchResponses] as Map).cast<String, dynamic>();
+      final PaginatedResult<Response> rawResponses =
+          const PaginatedModelType(Response.classType).fromJson(responsesBlob);
+
+      final detailResponsesBlob =
+          (jsonData[fetchDetails] as Map).cast<String, dynamic>();
+
+      final List<DetailResponse> newDetails = parseDetail(detailResponsesBlob);
+
+      final blueResponsesBlob =
+          (jsonData[fetchBlueResponses] as Map).cast<String, dynamic>();
+
+      final List<BlueDyeResponse> newBlueDye = parseBlue(blueResponsesBlob);
+
+      final List<Response> newResponses =
+          rawResponses.items.whereType<Response>().toList();
+
+      if (includePrevious) {
+        responses = [...responses, ...newResponses];
+        details = [...details, ...newDetails];
+        blueDyeResponses = [...blueDyeResponses, ...newBlueDye];
+      } else {
+        responses = newResponses;
+        details = newDetails;
+        blueDyeResponses = newBlueDye;
+      }
+
+      _emit();
+
+      /*final GraphQLResponse<PaginatedResult<DetailResponse>> detailResult =
           await Amplify.API.query(request: detailQuery).response;
 
       if (detailResult.data != null) {
@@ -119,6 +333,7 @@ class Stamps extends StampRepo<repo.Response> {
               withDetail.add(toAdd);
             }
           }
+
           final BlueDyeResponse toAdd =
               blueDyeResponse.copyWith(logs: withDetail);
           cleaned.add(toAdd);
@@ -126,9 +341,8 @@ class Stamps extends StampRepo<repo.Response> {
 
         blueDyeResponses = cleaned;
       }
-      _emit();
+      _emit();*/
     } catch (e) {
-      print('caught');
       safePrint(e);
     }
   }
@@ -165,16 +379,16 @@ class Stamps extends StampRepo<repo.Response> {
             detailToQuery(stamp, fromLocal(currentUser));
         final GraphQLRequest<DetailResponse> request =
             ModelMutations.create(toCreate);
-        final GraphQLResponse<DetailResponse> response =
+        final GraphQLResponse<DetailResponse> parentResponse =
             await Amplify.API.mutate(request: request).response;
         for (Response response in toCreate.responses!) {
           final Response childCreate =
-              response.copyWith(detailResponse: toCreate);
+              response.copyWith(detailResponseID: parentResponse.data?.id);
           final GraphQLRequest<Response> createChild =
               ModelMutations.create(childCreate);
           await Amplify.API.mutate(request: createChild).response;
         }
-        if (response.data != null) {
+        if (parentResponse.data != null) {
           details.add(toCreate);
           _emit();
         }
@@ -292,7 +506,7 @@ class Stamps extends StampRepo<repo.Response> {
         final List<Response> created = [];
         for (Response childCreate in toUpdate.responses ?? []) {
           final Response childToCreate =
-              childCreate.copyWith(detailResponse: toUpdate);
+              childCreate.copyWith(detailResponseID: toUpdate.id);
           final GraphQLRequest<Response> createRequest =
               ModelMutations.create(childToCreate);
           final GraphQLResponse<Response> createResponse =

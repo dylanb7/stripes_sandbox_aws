@@ -36,7 +36,7 @@ class Response extends amplify_core.Model {
   final int? _numeric;
   final List<int>? _all_selected;
   final String? _subUserId;
-  final DetailResponse? _detailResponse;
+  final String? _detailResponseID;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -121,8 +121,8 @@ class Response extends amplify_core.Model {
     }
   }
   
-  DetailResponse? get detailResponse {
-    return _detailResponse;
+  String? get detailResponseID {
+    return _detailResponseID;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -133,9 +133,9 @@ class Response extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Response._internal({required this.id, required stamp, required type, required qid, textResponse, selected, numeric, all_selected, required subUserId, detailResponse, createdAt, updatedAt}): _stamp = stamp, _type = type, _qid = qid, _textResponse = textResponse, _selected = selected, _numeric = numeric, _all_selected = all_selected, _subUserId = subUserId, _detailResponse = detailResponse, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Response._internal({required this.id, required stamp, required type, required qid, textResponse, selected, numeric, all_selected, required subUserId, detailResponseID, createdAt, updatedAt}): _stamp = stamp, _type = type, _qid = qid, _textResponse = textResponse, _selected = selected, _numeric = numeric, _all_selected = all_selected, _subUserId = subUserId, _detailResponseID = detailResponseID, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Response({String? id, required amplify_core.TemporalDateTime stamp, required String type, required String qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, required String subUserId, DetailResponse? detailResponse}) {
+  factory Response({String? id, required amplify_core.TemporalDateTime stamp, required String type, required String qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, required String subUserId, String? detailResponseID}) {
     return Response._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       stamp: stamp,
@@ -146,7 +146,7 @@ class Response extends amplify_core.Model {
       numeric: numeric,
       all_selected: all_selected != null ? List<int>.unmodifiable(all_selected) : all_selected,
       subUserId: subUserId,
-      detailResponse: detailResponse);
+      detailResponseID: detailResponseID);
   }
   
   bool equals(Object other) {
@@ -166,7 +166,7 @@ class Response extends amplify_core.Model {
       _numeric == other._numeric &&
       DeepCollectionEquality().equals(_all_selected, other._all_selected) &&
       _subUserId == other._subUserId &&
-      _detailResponse == other._detailResponse;
+      _detailResponseID == other._detailResponseID;
   }
   
   @override
@@ -186,7 +186,7 @@ class Response extends amplify_core.Model {
     buffer.write("numeric=" + (_numeric != null ? _numeric!.toString() : "null") + ", ");
     buffer.write("all_selected=" + (_all_selected != null ? _all_selected!.toString() : "null") + ", ");
     buffer.write("subUserId=" + "$_subUserId" + ", ");
-    buffer.write("detailResponse=" + (_detailResponse != null ? _detailResponse!.toString() : "null") + ", ");
+    buffer.write("detailResponseID=" + "$_detailResponseID" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -194,7 +194,7 @@ class Response extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Response copyWith({amplify_core.TemporalDateTime? stamp, String? type, String? qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, String? subUserId, DetailResponse? detailResponse}) {
+  Response copyWith({amplify_core.TemporalDateTime? stamp, String? type, String? qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, String? subUserId, String? detailResponseID}) {
     return Response._internal(
       id: id,
       stamp: stamp ?? this.stamp,
@@ -205,7 +205,7 @@ class Response extends amplify_core.Model {
       numeric: numeric ?? this.numeric,
       all_selected: all_selected ?? this.all_selected,
       subUserId: subUserId ?? this.subUserId,
-      detailResponse: detailResponse ?? this.detailResponse);
+      detailResponseID: detailResponseID ?? this.detailResponseID);
   }
   
   Response copyWithModelFieldValues({
@@ -217,7 +217,7 @@ class Response extends amplify_core.Model {
     ModelFieldValue<int?>? numeric,
     ModelFieldValue<List<int>>? all_selected,
     ModelFieldValue<String>? subUserId,
-    ModelFieldValue<DetailResponse?>? detailResponse
+    ModelFieldValue<String?>? detailResponseID
   }) {
     return Response._internal(
       id: id,
@@ -229,7 +229,7 @@ class Response extends amplify_core.Model {
       numeric: numeric == null ? this.numeric : numeric.value,
       all_selected: all_selected == null ? this.all_selected : all_selected.value,
       subUserId: subUserId == null ? this.subUserId : subUserId.value,
-      detailResponse: detailResponse == null ? this.detailResponse : detailResponse.value
+      detailResponseID: detailResponseID == null ? this.detailResponseID : detailResponseID.value
     );
   }
   
@@ -243,14 +243,12 @@ class Response extends amplify_core.Model {
       _numeric = (json['numeric'] as num?)?.toInt(),
       _all_selected = (json['all_selected'] as List?)?.map((e) => (e as num).toInt()).toList(),
       _subUserId = json['subUserId'],
-      _detailResponse = json['detailResponse']?['serializedData'] != null
-        ? DetailResponse.fromJson(new Map<String, dynamic>.from(json['detailResponse']['serializedData']))
-        : null,
+      _detailResponseID = json['detailResponseID'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'stamp': _stamp?.format(), 'type': _type, 'qid': _qid, 'textResponse': _textResponse, 'selected': _selected, 'numeric': _numeric, 'all_selected': _all_selected, 'subUserId': _subUserId, 'detailResponse': _detailResponse?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'stamp': _stamp?.format(), 'type': _type, 'qid': _qid, 'textResponse': _textResponse, 'selected': _selected, 'numeric': _numeric, 'all_selected': _all_selected, 'subUserId': _subUserId, 'detailResponseID': _detailResponseID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -263,7 +261,7 @@ class Response extends amplify_core.Model {
     'numeric': _numeric,
     'all_selected': _all_selected,
     'subUserId': _subUserId,
-    'detailResponse': _detailResponse,
+    'detailResponseID': _detailResponseID,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -278,9 +276,7 @@ class Response extends amplify_core.Model {
   static final NUMERIC = amplify_core.QueryField(fieldName: "numeric");
   static final ALL_SELECTED = amplify_core.QueryField(fieldName: "all_selected");
   static final SUBUSERID = amplify_core.QueryField(fieldName: "subUserId");
-  static final DETAILRESPONSE = amplify_core.QueryField(
-    fieldName: "detailResponse",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'DetailResponse'));
+  static final DETAILRESPONSEID = amplify_core.QueryField(fieldName: "detailResponseID");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Response";
     modelSchemaDefinition.pluralName = "Responses";
@@ -308,7 +304,8 @@ class Response extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["subUserId", "stamp"], name: "responsesBySub")
+      amplify_core.ModelIndex(fields: const ["subUserId", "stamp"], name: "responsesBySub"),
+      amplify_core.ModelIndex(fields: const ["detailResponseID"], name: "byDetail")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
@@ -362,11 +359,10 @@ class Response extends amplify_core.Model {
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: Response.DETAILRESPONSE,
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Response.DETAILRESPONSEID,
       isRequired: false,
-      targetNames: ['detailResponseID'],
-      ofModelName: 'DetailResponse'
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

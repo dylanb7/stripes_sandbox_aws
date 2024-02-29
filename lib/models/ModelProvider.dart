@@ -38,7 +38,7 @@ export 'SubUser.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "9963e4ad1d97e032e832dd81ef4e695d";
+  String version = "9121d33ff2bd9b40692932a8dcfabde2";
   @override
   List<amplify_core.ModelSchema> modelSchemas = [BlueDyeResponse.schema, BlueDyeResponseLog.schema, BlueDyeTest.schema, BlueDyeTestLog.schema, DetailResponse.schema, Response.schema, SubUser.schema];
   @override

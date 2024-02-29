@@ -37,8 +37,7 @@ type Response
   numeric: Int
   all_selected: [Int!]
   subUserId: ID! @index(name: "responsesBySub", sortKeyFields: ["stamp"])
-  detailResponseID: ID
-  detailResponse: DetailResponse @belongsTo(fields: ["detailResponseID"])
+  detailResponseID: ID @index(name: "byDetail")
 }
 
 type DetailResponse
@@ -53,7 +52,7 @@ type DetailResponse
   stamp: AWSDateTime!
   type: String
   description: String
-  responses: [Response] @hasMany(fields: ["id"])
+  responses: [Response] @hasMany(indexName: "byDetail", fields: ["id"])
   subUserId: ID! @index(name: "detailsBySub", sortKeyFields: ["stamp"])
 }
 
@@ -68,7 +67,7 @@ type BlueDyeTest
   id: ID!
   stamp: AWSDateTime!
   finishedEating: Int
-  logs: [BlueDyeTestLog] @hasMany(fields: ["id"])
+  logs: [BlueDyeTestLog] @hasMany(indexName: "byBlueDyeTest", fields: ["id"])
   subUserId: ID!
   subUser: SubUser! @belongsTo(fields: ["subUserId"])
 }
@@ -84,7 +83,8 @@ type BlueDyeResponse
   id: ID!
   stamp: AWSDateTime!
   finishedEating: Int!
-  logs: [BlueDyeResponseLog] @hasMany(fields: ["id"])
+  logs: [BlueDyeResponseLog]
+    @hasMany(indexName: "byBlueResponse", fields: ["id"])
   subUserId: ID! @index(name: "blueResponseBySub", sortKeyFields: ["stamp"])
 }
 
@@ -98,7 +98,7 @@ type BlueDyeTestLog
   ) {
   id: ID!
   isBlue: Boolean!
-  blueDyeTestID: ID
+  blueDyeTestID: ID @index(name: "byBlueDyeTest")
   blueDyeTest: BlueDyeTest @belongsTo(fields: ["blueDyeTestID"])
   detailResponseID: ID
   response: DetailResponse @hasOne(fields: ["detailResponseID"])
@@ -114,7 +114,7 @@ type BlueDyeResponseLog
   ) {
   id: ID!
   isBlue: Boolean!
-  blueDyeResponseID: ID
+  blueDyeResponseID: ID @index(name: "byBlueResponse")
   blueDyeResponse: BlueDyeResponse @belongsTo(fields: ["blueDyeResponseID"])
   detailResponseID: ID
   response: DetailResponse @hasOne(fields: ["detailResponseID"])

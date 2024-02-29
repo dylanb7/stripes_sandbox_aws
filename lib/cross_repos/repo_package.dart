@@ -7,11 +7,11 @@ import 'package:stripes_backend_helper/RepositoryBase/QuestionBase/question_repo
 import 'package:stripes_backend_helper/RepositoryBase/StampBase/base_stamp_repo.dart';
 import 'package:stripes_backend_helper/RepositoryBase/SubBase/base_sub_repo.dart';
 import 'package:stripes_backend_helper/RepositoryBase/SubBase/sub_user.dart';
-import 'package:stripes_backend_helper/RepositoryBase/TestBase/BlueDye/blue_dye_impl.dart';
 import 'package:stripes_backend_helper/RepositoryBase/TestBase/base_test_repo.dart';
 import 'package:stripes_backend_helper/TestingReposImpl/test_question_repo.dart';
 import 'package:stripes_backend_helper/repo_package.dart';
 import 'package:stripes_sandbox_aws/accessed_repo.dart';
+import 'package:stripes_sandbox_aws/cross_repos/questions.dart';
 import 'package:stripes_sandbox_aws/cross_repos/stamp_repo.dart';
 import 'package:stripes_sandbox_aws/cross_repos/sub_repo.dart';
 import 'package:stripes_sandbox_aws/cross_repos/test_repo.dart';
@@ -31,7 +31,7 @@ class CrossRepoPackage extends StripesRepoPackage {
 
   @override
   QuestionRepo<QuestionHome> questions({required AuthUser user}) {
-    return TestQuestionRepo();
+    return Questions(authUser: user);
   }
 
   @override
@@ -49,15 +49,17 @@ class CrossRepoPackage extends StripesRepoPackage {
   }
 
   @override
-  TestRepo<BlueDyeTest> test(
+  TestsRepo test(
       {required AuthUser user,
       required SubUser subUser,
       required StampRepo stampRepo,
       required QuestionRepo<QuestionHome> questionRepo}) {
-    return Test(
-        stampRepo: stampRepo,
-        authUser: user,
-        subUser: subUser,
-        questionRepo: questionRepo);
+    return TestsRepo(tests: [
+      BlueTest(
+          stampRepo: stampRepo,
+          authUser: user,
+          subUser: subUser,
+          questionRepo: questionRepo)
+    ]);
   }
 }

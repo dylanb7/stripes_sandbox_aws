@@ -2,36 +2,88 @@ import 'dart:async';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:rxdart/subjects.dart';
+import 'package:stripes_backend_helper/TestingReposImpl/test_question_repo.dart';
 
-import 'package:stripes_backend_helper/RepositoryBase/TestBase/BlueDye/blue_dye_impl.dart'
-    as repo;
-import 'package:stripes_backend_helper/RepositoryBase/TestBase/base_test_repo.dart';
+import 'package:stripes_backend_helper/stripes_backend_helper.dart';
 import 'package:stripes_sandbox_aws/cross_repos/stamp_repo.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponseLog.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeTestLog.dart';
-import 'package:stripes_sandbox_aws/models/DetailResponse.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
+import 'package:stripes_ui/UI/Record/TestScreen/test_screen.dart';
+import 'package:stripes_ui/Util/text_styles.dart';
+import 'package:stripes_ui/l10n/app_localizations.dart';
 
 import '../../models/BlueDyeTest.dart';
-import 'query_utils.dart';
 
-class Test extends TestRepo<repo.BlueDyeTest> {
+class BlueTest extends Test<BlueDyeObj> {
   BlueDyeTest? current;
 
-  final StreamController<repo.BlueDyeTest?> _controller = StreamController();
+  final BehaviorSubject<BlueDyeObj> _controller = BehaviorSubject();
 
-  Test(
-      {required super.stampRepo,
-      required super.authUser,
-      required super.subUser,
-      required super.questionRepo}) {
+  BlueTest({
+    required super.stampRepo,
+    required super.authUser,
+    required super.subUser,
+    required super.questionRepo,
+  }) : super(listensTo: {Symptoms.BM}) {
     fetchCurrentTest();
   }
 
   Future<void> fetchCurrentTest() async {
+    const fetchTest = "listBlueDyeTests";
+    const gqlDocument = '''query FetchTest(\$id: ID!) {
+      $fetchTest(filter: {subUserId: { eq: \$id} }) {  
+        items {
+          id
+          stamp
+          finishedEating
+          logs {
+            items {
+              id
+              isBlue
+              response {
+                id
+                stamp
+                type
+                description
+                responses {
+                  items {
+                    id
+                    stamp
+                    type
+                    qid
+                    textResponse
+                    selected
+                    numeric
+                    all_selected
+                  }
+                }
+              }
+            }
+          }
+          
+        }
+      }
+    }
+    ''';
+    GraphQLRequest<PaginatedResult<BlueDyeTest>> testRequest = GraphQLRequest(
+      document: gqlDocument,
+      modelType: const PaginatedModelType(BlueDyeTest.classType),
+      variables: {"id": subUser.uid},
+      decodePath: fetchTest,
+    );
     try {
-      GraphQLRequest<PaginatedResult<BlueDyeTest>> request = ModelQueries.list(
+      final GraphQLResponse<PaginatedResult<BlueDyeTest>> response =
+          await Amplify.API.query(request: testRequest).response;
+      if (response.data == null) return _emit(null);
+      _emit(response.data?.items.isEmpty ?? true
+          ? null
+          : response.data?.items.first);
+
+      /*GraphQLRequest<PaginatedResult<BlueDyeTest>> request = ModelQueries.list(
           BlueDyeTest.classType,
           where: BlueDyeTest.SUBUSER.eq(subUser.uid));
 
@@ -40,56 +92,19 @@ class Test extends TestRepo<repo.BlueDyeTest> {
 
       final BlueDyeTest? rawTest = res.data?.items.first;
 
-      final BlueDyeTest? withLogs = await _addLogs(rawTest);
+      final BlueDyeTest? withLogs = await _addLogs(rawTest);*/
 
-      _emit(withLogs);
+      //_emit(result.data);
     } catch (e) {
       safePrint(e);
     }
   }
 
-  Future<BlueDyeTest?> _addLogs(BlueDyeTest? raw) async {
-    if (raw == null || raw.logs != null) return raw;
-    final GraphQLRequest<PaginatedResult<BlueDyeTestLog>> logsRequest =
-        ModelQueries.list(BlueDyeTestLog.classType,
-            where: BlueDyeTestLog.BLUEDYETEST.eq(raw.id));
-    final GraphQLResponse<PaginatedResult<BlueDyeTestLog>> res =
-        await Amplify.API.query(request: logsRequest).response;
-    final List<BlueDyeTestLog> logs =
-        res.data?.items.whereType<BlueDyeTestLog>().toList() ?? [];
-    final List<BlueDyeTestLog> withResp = [];
-    for (BlueDyeTestLog log in logs) {
-      final BlueDyeTestLog? cleanedLog = await _clean(log);
-      if (cleanedLog == null) continue;
-      withResp.add(cleanedLog);
-    }
-    return raw.copyWith(logs: withResp);
-  }
-
-  Future<BlueDyeTestLog?> _clean(BlueDyeTestLog log) async {
-    if (log.response != null) {
-      final DetailResponse? cleaned = await ensureDetailChildren(log.response);
-      if (cleaned == null) return null;
-      final BlueDyeTestLog withResponse = log.copyWith(response: cleaned);
-      return withResponse;
-    }
-    final GraphQLRequest<PaginatedResult<DetailResponse>> logResponse =
-        ModelQueries.list(DetailResponse.classType,
-            where: DetailResponse.ID.eq(log.detailResponseID));
-    final DetailResponse? res =
-        (await Amplify.API.query(request: logResponse).response)
-            .data
-            ?.items
-            .first;
-    final DetailResponse? cleanedDetail = await ensureDetailChildren(res);
-    if (cleanedDetail == null) return null;
-    final BlueDyeTestLog withResponse = log.copyWith(response: cleanedDetail);
-    return withResponse;
-  }
-
   _emit(BlueDyeTest? test) {
     current = test;
-    _controller.add(test != null ? queryToLocalTest(test, questionRepo) : null);
+    _controller.add(test != null
+        ? queryToLocalTest(test, questionRepo)
+        : BlueDyeObj.empty());
   }
 
   @override
@@ -109,10 +124,10 @@ class Test extends TestRepo<repo.BlueDyeTest> {
   }
 
   @override
-  Stream<repo.BlueDyeTest?> get obj => _controller.stream;
+  BehaviorSubject<BlueDyeObj> get obj => _controller;
 
   @override
-  setValue(repo.BlueDyeTest obj) async {
+  setValue(BlueDyeObj obj) async {
     final BlueDyeTest value = localTestToQuery(obj, subUser);
     final List<BlueDyeTestLog> logs = value.logs!;
     final GraphQLRequest<PaginatedResult<BlueDyeTest>> query =
@@ -194,4 +209,94 @@ class Test extends TestRepo<repo.BlueDyeTest> {
       safePrint(e);
     }
   }
+
+  @override
+  Widget? displayState(BuildContext context) {
+    return BlueDyeTestScreen<BlueTest>();
+  }
+
+  @override
+  String getName(BuildContext context) {
+    return AppLocalizations.of(context)!.blueDyeHeader;
+  }
+
+  @override
+  Future<void> onDelete(Response<Question> stamp, String type) async {
+    if (stamp is! DetailResponse) return;
+    final BlueDyeObj current = obj.value;
+    final bool? isBlue = _isBlueFromDetail(stamp);
+    if (isBlue == null) return;
+    final List<BMTestLog> logs = current.logs;
+    logs.removeWhere((element) => element.response == stamp);
+    if (logs == current.logs) return;
+    await setValue(current.copyWith(logs: logs));
+  }
+
+  @override
+  Future<void> onEdit(Response<Question> stamp, String type) async {
+    if (stamp is! DetailResponse) return;
+    final BlueDyeObj current = obj.value;
+    final bool? isBlue = _isBlueFromDetail(stamp);
+    if (isBlue == null) return;
+    final int index =
+        current.logs.indexWhere((element) => element.stamp == stamp.stamp);
+    if (index < 0) return;
+    final List<BMTestLog> newLogs = current.logs;
+    newLogs[index] = BMTestLog(response: stamp, isBlue: isBlue);
+    await setValue(current.copyWith(logs: newLogs));
+  }
+
+  @override
+  Future<void> onSubmit(Response<Question> stamp, String type) async {
+    if (stamp is! DetailResponse) return;
+    final bool? blue = _isBlueFromDetail(stamp);
+    if (blue == null) return;
+    final BlueDyeObj current = obj.value;
+    await setValue(current.copyWith(
+        logs: [...current.logs, BMTestLog(response: stamp, isBlue: blue)]));
+  }
+
+  TestState get state =>
+      obj.hasValue ? stateFromTestOBJ(obj.value) : TestState.initial;
+
+  bool? _isBlueFromDetail(DetailResponse res) {
+    List<Response> blueRes = res.responses
+        .where((val) => val.question.id == blueQuestionId)
+        .toList();
+    if (blueRes.isEmpty) return null;
+    final MultiResponse multi = blueRes.first as MultiResponse;
+    return multi.index == 0;
+  }
+
+  @override
+  Widget? pathAdditions(BuildContext context, String type) {
+    final TestState current = state;
+    if (current == TestState.initial || current == TestState.started) {
+      return null;
+    }
+    return Text(
+      AppLocalizations.of(context)!.testInProgressNotif,
+      style: lightBackgroundStyle.copyWith(
+          color: Theme.of(context).colorScheme.secondary),
+    );
+  }
+
+  @override
+  List<Question> recordAdditions(BuildContext context, String type) {
+    final TestState current = state;
+    return [
+      if (current == TestState.logs || current == TestState.logsSubmit)
+        MultipleChoice(
+            id: blueQuestionId,
+            isRequired: true,
+            prompt: AppLocalizations.of(context)!.submitBlueQuestion,
+            type: type,
+            choices: [
+              AppLocalizations.of(context)!.blueQuestionYes,
+              AppLocalizations.of(context)!.blueQuestionNo
+            ])
+    ];
+  }
 }
+
+const blueQuestionId = "BlueDyeQuestion";

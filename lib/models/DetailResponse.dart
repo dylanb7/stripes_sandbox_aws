@@ -263,7 +263,7 @@ class DetailResponse extends amplify_core.Model {
       key: DetailResponse.RESPONSES,
       isRequired: false,
       ofModelName: 'Response',
-      associatedKey: Response.DETAILRESPONSE
+      associatedKey: Response.DETAILRESPONSEID
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
