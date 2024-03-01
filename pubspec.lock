@@ -880,7 +880,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e1500a622ca6d859c5fd7af73d07a5165afd09fc
+      resolved-ref: ad987bb2ee69b5240a156b85c20e55393d65fc9e
       url: "https://github.com/dylanb7/stripes_ui"
     source: git
     version: "1.0.2"

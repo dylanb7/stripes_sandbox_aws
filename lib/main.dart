@@ -5,11 +5,9 @@ import 'package:stripes_sandbox_aws/amplifyconfiguration.dart';
 import 'package:stripes_sandbox_aws/cross_repos/configure_amplify.dart';
 import 'package:stripes_sandbox_aws/cross_repos/repo_package.dart';
 import 'package:stripes_ui/entry.dart';
-import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setPathUrlStrategy();
   await addAmplifyCrossPugins();
   await Amplify.configure(amplifyconfig);
   runApp(const MyApp());
