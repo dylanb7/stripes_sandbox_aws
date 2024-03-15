@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
@@ -8,9 +7,9 @@ import 'package:stripes_backend_helper/TestingReposImpl/test_question_repo.dart'
 
 import 'package:stripes_backend_helper/stripes_backend_helper.dart';
 import 'package:stripes_sandbox_aws/cross_repos/stamp_repo.dart';
+import 'package:stripes_sandbox_aws/local_repos/local_db.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponseLog.dart';
-import 'package:stripes_sandbox_aws/models/BlueDyeTestLog.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
 import 'package:stripes_ui/UI/Record/TestScreen/test_screen.dart';
 import 'package:stripes_ui/l10n/app_localizations.dart';
@@ -22,6 +21,8 @@ class BlueTest extends Test<BlueDyeObj> {
 
   final BehaviorSubject<BlueDyeObj> _controller = BehaviorSubject();
 
+  final LocalDB db = LocalDB();
+
   BlueTest({
     required super.stampRepo,
     required super.authUser,
@@ -32,71 +33,8 @@ class BlueTest extends Test<BlueDyeObj> {
   }
 
   Future<void> fetchCurrentTest() async {
-    const fetchTest = "listBlueDyeTests";
-    const gqlDocument = '''query FetchTest(\$id: ID!) {
-      $fetchTest(filter: {subUserId: { eq: \$id} }) {  
-        items {
-          id
-          stamp
-          finishedEating
-          logs {
-            items {
-              id
-              isBlue
-              response {
-                id
-                stamp
-                type
-                description
-                responses {
-                  items {
-                    id
-                    stamp
-                    type
-                    qid
-                    textResponse
-                    selected
-                    numeric
-                    all_selected
-                  }
-                }
-              }
-            }
-          }
-          
-        }
-      }
-    }
-    ''';
-    GraphQLRequest<PaginatedResult<BlueDyeTest>> testRequest = GraphQLRequest(
-      document: gqlDocument,
-      modelType: const PaginatedModelType(BlueDyeTest.classType),
-      variables: {"id": subUser.uid},
-      decodePath: fetchTest,
-    );
-    try {
-      final GraphQLResponse<PaginatedResult<BlueDyeTest>> response =
-          await Amplify.API.query(request: testRequest).response;
-      if (response.data == null) return _emit(null);
-      _emit(response.data?.items.isEmpty ?? true
-          ? null
-          : response.data?.items.first);
-
-      /*GraphQLRequest<PaginatedResult<BlueDyeTest>> request = ModelQueries.list(
-          BlueDyeTest.classType,
-          where: BlueDyeTest.SUBUSER.eq(subUser.uid));
-
-      GraphQLResponse<PaginatedResult<BlueDyeTest>> res =
-          await Amplify.API.query(request: request).response;
-
-      final BlueDyeTest? rawTest = res.data?.items.first;
-
-      final BlueDyeTest? withLogs = await _addLogs(rawTest);*/
-
-      //_emit(result.data);
-    } catch (e) {
-      safePrint(e);
-    }
+    final BlueDyeTest? test = await db.getBlueDyeTest(subUser.uid);
+    _emit(test);
   }
 
   _emit(BlueDyeTest? test) {
@@ -109,17 +47,8 @@ class BlueTest extends Test<BlueDyeObj> {
   @override
   cancel() async {
     if (current == null) return;
-    final GraphQLRequest<BlueDyeTest> delete = ModelMutations.deleteById(
-        BlueDyeTest.classType, BlueDyeTestModelIdentifier(id: current!.id));
-    try {
-      GraphQLResponse<BlueDyeTest> res =
-          await Amplify.API.mutate(request: delete).response;
-      if (!res.hasErrors) {
-        _emit(null);
-      }
-    } catch (e) {
-      safePrint(e);
-    }
+    await db.setBlueDyeTest(null, subUser.uid);
+    _emit(null);
   }
 
   @override
@@ -128,56 +57,8 @@ class BlueTest extends Test<BlueDyeObj> {
   @override
   setValue(BlueDyeObj obj) async {
     final BlueDyeTest value = localTestToQuery(obj, subUser);
-    final List<BlueDyeTestLog> logs = value.logs!;
-    final GraphQLRequest<PaginatedResult<BlueDyeTest>> query =
-        ModelQueries.list(BlueDyeTest.classType,
-            where: BlueDyeTest.SUBUSER.eq(subUser.uid));
-    try {
-      final GraphQLResponse<PaginatedResult<BlueDyeTest>> tests =
-          await Amplify.API.query(request: query).response;
-      final bool exists = tests.data?.items.isNotEmpty ?? false;
-      GraphQLResponse<BlueDyeTest>? result;
-      if (exists) {
-        final GraphQLRequest<BlueDyeTest> update = ModelMutations.update(value);
-        result = await Amplify.API.mutate(request: update).response;
-        if (result.data == null) {
-          safePrint(result.errors);
-          return;
-        }
-      } else {
-        final GraphQLRequest<BlueDyeTest> create = ModelMutations.create(value);
-        result = await Amplify.API.mutate(request: create).response;
-        if (result.data == null) {
-          safePrint(result.errors);
-          return;
-        }
-      }
-      final List<BlueDyeTestLog> currentLogs = current?.logs ?? [];
-      for (BlueDyeTestLog log in currentLogs) {
-        final GraphQLRequest<BlueDyeTestLog> delete =
-            ModelMutations.delete(log);
-        await Amplify.API.mutate(request: delete).response;
-      }
-      List<BlueDyeTestLog> created = [];
-      for (BlueDyeTestLog log in logs) {
-        final BlueDyeTestLog toCreate = log.copyWith(blueDyeTest: result.data);
-        final GraphQLRequest<BlueDyeTestLog> create =
-            ModelMutations.create(toCreate);
-        final GraphQLResponse<BlueDyeTestLog> createdLog =
-            await Amplify.API.mutate(request: create).response;
-        if (createdLog.data != null) {
-          created.add(createdLog.data!.copyWith(
-              isBlue: toCreate.isBlue,
-              blueDyeTest: toCreate.blueDyeTest,
-              detailResponseID: toCreate.response?.id,
-              response: toCreate.response));
-        }
-      }
-      final BlueDyeTest? toEmit = result.data?.copyWith(logs: created);
-      _emit(toEmit);
-    } catch (e) {
-      safePrint(e);
-    }
+    final bool added = await db.setBlueDyeTest(value, subUser.uid);
+    if (added) _emit(value);
   }
 
   @override

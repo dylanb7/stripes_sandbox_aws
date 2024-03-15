@@ -88,6 +88,7 @@ repo.Response responseFromQuery(Response response, QuestionRepo questionRepo) {
 Response responseToQuery(repo.Response response, String subUserId) {
   final TemporalDateTime awsDate =
       TemporalDateTime(DateTime.fromMillisecondsSinceEpoch(response.stamp));
+
   if (response is repo.OpenResponse) {
     return Response(
         stamp: awsDate,

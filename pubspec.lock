@@ -265,6 +265,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
+  dev_build:
+    dependency: transitive
+    description:
+      name: dev_build
+      sha256: e5d575f3de4b0e5f004e065e1e2d98fa012d634b61b5855216b5698ed7f1e443
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.16.4+3"
   device_info_plus:
     dependency: transitive
     description:
@@ -391,10 +399,58 @@ packages:
     dependency: transitive
     description:
       name: flutter_riverpod
-      sha256: "4bce556b7ecbfea26109638d5237684538d4abc509d253e6c5c4c5733b360098"
+      sha256: "0f1974eff5bbe774bf1d870e406fc6f29e3d6f1c46bd9c58e7172ff68a785d7d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.10"
+    version: "2.5.1"
+  flutter_secure_storage:
+    dependency: "direct main"
+    description:
+      name: flutter_secure_storage
+      sha256: ffdbb60130e4665d2af814a0267c481bcf522c41ae2e43caf69fa0146876d685
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.0"
+  flutter_secure_storage_linux:
+    dependency: transitive
+    description:
+      name: flutter_secure_storage_linux
+      sha256: "3d5032e314774ee0e1a7d0a9f5e2793486f0dff2dd9ef5a23f4e3fb2a0ae6a9e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
+  flutter_secure_storage_macos:
+    dependency: transitive
+    description:
+      name: flutter_secure_storage_macos
+      sha256: bd33935b4b628abd0b86c8ca20655c5b36275c3a3f5194769a7b3f37c905369c
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
+  flutter_secure_storage_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_secure_storage_platform_interface
+      sha256: "0d4d3a5dd4db28c96ae414d7ba3b8422fd735a8255642774803b2532c9a61d7e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
+  flutter_secure_storage_web:
+    dependency: transitive
+    description:
+      name: flutter_secure_storage_web
+      sha256: "30f84f102df9dcdaa2241866a958c2ec976902ebdaa8883fbfe525f1f2f3cf20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
+  flutter_secure_storage_windows:
+    dependency: transitive
+    description:
+      name: flutter_secure_storage_windows
+      sha256: "5809c66f9dd3b4b93b0a6e2e8561539405322ee767ac2f64d084e2ab5429d108"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   flutter_staggered_grid_view:
     dependency: transitive
     description:
@@ -429,14 +485,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.1.1"
-  google_fonts:
-    dependency: transitive
-    description:
-      name: google_fonts
-      sha256: f0b8d115a13ecf827013ec9fc883390ccc0e87a96ed5347a3114cac177ef18e8
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.0"
   graphs:
     dependency: transitive
     description:
@@ -677,6 +725,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.6"
+  pool:
+    dependency: transitive
+    description:
+      name: pool
+      sha256: "20fe868b6314b322ea036ba325e6fc0711a22948856475e2c2b6306e8ab39c2a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.1"
+  process_run:
+    dependency: transitive
+    description:
+      name: process_run
+      sha256: "8d9c6198b98fbbfb511edd42e7364e24d85c163e47398919871b952dc86a423e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.2"
+  pub_semver:
+    dependency: transitive
+    description:
+      name: pub_semver
+      sha256: "40d3ab1bbd474c4c2328c91e3a7df8c6dd629b79ece4c4bd04bee496a224fb0c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.4"
   qr:
     dependency: transitive
     description:
@@ -705,10 +777,10 @@ packages:
     dependency: transitive
     description:
       name: riverpod
-      sha256: "548e2192eb7aeb826eb89387f814edb76594f3363e2c0bb99dd733d795ba3589"
+      sha256: f21b32ffd26a36555e501b04f4a5dca43ed59e16343f1a30c13632b2351dfa4d
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.0"
+    version: "2.5.1"
   rxdart:
     dependency: "direct main"
     description:
@@ -818,14 +890,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      sha256: a9016f495c927cb90557c909ff26a6d92d9bd54fc42ba92e19d4e79d61e798c6
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.2"
+  sqflite_common:
+    dependency: transitive
+    description:
+      name: sqflite_common
+      sha256: "28d8c66baee4968519fb8bd6cdbedad982d6e53359091f0b74544a9f32ec72d5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.3"
+  sqflite_common_ffi:
+    dependency: transitive
+    description:
+      name: sqflite_common_ffi
+      sha256: "754927d82de369a6b9e760fb60640aa81da650f35ffd468d5a992814d6022908"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.2+1"
+  sqflite_common_ffi_web:
+    dependency: "direct main"
+    description:
+      name: sqflite_common_ffi_web
+      sha256: "0c2921454d2e4a227675fb952be9fef916cf65fb9e9b606b54cfdf080d3e9450"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.2+3"
+  sqflite_sqlcipher:
+    dependency: "direct main"
+    description:
+      name: sqflite_sqlcipher
+      sha256: e1dfb55bf21ee5a18c43f28faa4291272a801da4ab34a6ba9973b6c0e1ed77da
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.1"
   sqlite3:
     dependency: transitive
     description:
       name: sqlite3
-      sha256: db65233e6b99e99b2548932f55a987961bc06d82a31a0665451fa0b4fff4c3fb
+      sha256: "072128763f1547e3e9b4735ce846bfd226d68019ccda54db4cd427b12dfdedc9"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "2.4.0"
   stack_trace:
     dependency: transitive
     description:
@@ -871,7 +983,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "2f8e936f2625996e0a7511e5d0601b7cac28dbaa"
+      resolved-ref: "29e70fa68f44def13fb38ff9572f6c153ab9ba53"
       url: "https://github.com/dylanb7/stripes_backend_helper"
     source: git
     version: "0.0.1"
@@ -880,10 +992,18 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: ad987bb2ee69b5240a156b85c20e55393d65fc9e
+      resolved-ref: "7d43cd1ba16368dada17874ac9c05865952898d0"
       url: "https://github.com/dylanb7/stripes_ui"
     source: git
     version: "1.0.2"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: "539ef412b170d65ecdafd780f924e5be3f60032a1128df156adad6c5b373d558"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0+1"
   term_glyph:
     dependency: transitive
     description:
@@ -1084,6 +1204,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.3.0"
+  yaml:
+    dependency: transitive
+    description:
+      name: yaml
+      sha256: "75769501ea3489fca56601ff33454fe45507ea3bfb014161abc3b43ae25989d5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.2"
 sdks:
   dart: ">=3.2.0 <4.0.0"
   flutter: ">=3.16.0"

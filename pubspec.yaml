@@ -44,6 +44,10 @@ dependencies:
   amplify_authenticator: ^1.5.3
   amplify_datastore: ^1.6.0
   url_strategy: ^0.2.0
+  sqflite_common_ffi_web: ^0.4.2+3
+  sqflite: ^2.3.2
+  sqflite_sqlcipher: ^2.2.1
+  flutter_secure_storage: ^9.0.0
   rxdart: ^0.27.7
 
 dev_dependencies:

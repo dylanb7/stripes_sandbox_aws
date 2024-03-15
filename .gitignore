@@ -43,6 +43,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+/web/sqflite_sw.js
+/web/sqlite3.wasm
+
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*
