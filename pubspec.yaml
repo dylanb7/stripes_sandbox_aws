@@ -38,11 +38,11 @@ dependencies:
     git:
       url: https://github.com/dylanb7/stripes_backend_helper
       branch: master
-  amplify_flutter: ^1.6.1
-  amplify_api: ^1.6.1
-  amplify_auth_cognito: ^1.6.1
-  amplify_authenticator: ^1.5.3
-  amplify_datastore: ^1.6.0
+  amplify_flutter: ^1.7.0
+  amplify_api: ^1.7.0
+  amplify_auth_cognito: ^1.7.2
+  amplify_authenticator: ^1.5.4
+  amplify_datastore: ^1.7.0
   url_strategy: ^0.2.0
   sqflite_common_ffi_web: ^0.4.2+3
   sqflite: ^2.3.2

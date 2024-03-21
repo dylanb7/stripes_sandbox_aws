@@ -16,7 +16,6 @@ class SubRepo extends SubUserRepo {
   final StreamController<List<repo.SubUser>> subStream = StreamController();
 
   SubRepo({required super.authUser}) {
-    subStream.add([]);
     init() async {
       final List<SubUser> users = await _querySubs();
       subUsers = users.map((user) => toLocal(user)).toList();

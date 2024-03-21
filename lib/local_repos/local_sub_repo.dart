@@ -15,7 +15,6 @@ class SubRepo extends SubUserRepo {
   final LocalDB db = LocalDB();
 
   SubRepo({required super.authUser}) {
-    subStream.add([]);
     init() async {
       final List<SubUser> users = await db.getSubUsers();
       subUsers = users.map((user) => toLocal(user)).toList();

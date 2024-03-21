@@ -28,7 +28,6 @@ class Stamps extends StampRepo<repo.Response> {
       {required super.authUser,
       required super.currentUser,
       required super.questionRepo}) {
-    _controller.add([]);
     fetchStamps();
   }
 

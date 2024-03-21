@@ -27,7 +27,6 @@ class Auth extends AuthRepo {
   }
 
   init() async {
-    userStream.add(const user_type.AuthUser.empty());
     final AuthSession sesh = await Amplify.Auth.fetchAuthSession();
     if (sesh.isSignedIn) {
       userStream.add(const user_type.AuthUser(uid: 'authed_no_token'));
