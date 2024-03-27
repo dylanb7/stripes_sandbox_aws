@@ -184,18 +184,21 @@ BlueDyeTest localTestToQuery(test.BlueDyeObj test, local.SubUser subUser) {
 
 test.BlueDyeObj queryToLocalTest(
     BlueDyeTest blueDyeTest, QuestionRepo questionRepo) {
-  final List<BMTestLog> logs = blueDyeTest.logs
-          ?.map((log) => BMTestLog(
-              id: log.id,
-              response: detailFromQuery(log.response!, questionRepo),
-              isBlue: log.isBlue))
-          .toList() ??
-      [];
+  final List<BlueDyeTestLog> logs = blueDyeTest.logs ?? [];
+  List<BMTestLog> bmTestLogs = [];
+  for (BlueDyeTestLog log in logs) {
+    if (log.response == null) continue;
+    bmTestLogs.add(BMTestLog(
+        id: log.id,
+        response: detailFromQuery(log.response!, questionRepo),
+        isBlue: log.isBlue));
+  }
+
   return test.BlueDyeObj(
       id: blueDyeTest.id,
       startTime: blueDyeTest.stamp.getDateTimeInUtc().toLocal(),
       finishedEating: blueDyeTest.finishedEating != null
           ? Duration(milliseconds: blueDyeTest.finishedEating!)
           : null,
-      logs: logs);
+      logs: bmTestLogs);
 }

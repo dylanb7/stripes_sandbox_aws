@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         initialStep: AuthenticatorStep.signIn,
         child: StripesApp(
           hasGraphing: false,
-          hasLogging: true,
+          hasLogging: false,
           builder: Authenticator.builder(),
           strat: AuthStrat.accessCodeEmail,
           repos: CrossRepoPackage(),

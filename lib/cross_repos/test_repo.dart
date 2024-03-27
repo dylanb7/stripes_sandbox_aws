@@ -128,7 +128,7 @@ class BlueTest extends Test<BlueDyeObj> {
   @override
   setValue(BlueDyeObj obj) async {
     final BlueDyeTest value = localTestToQuery(obj, subUser);
-    final List<BlueDyeTestLog> logs = value.logs!;
+    final List<BlueDyeTestLog> logs = value.logs ?? [];
     final GraphQLRequest<PaginatedResult<BlueDyeTest>> query =
         ModelQueries.list(BlueDyeTest.classType,
             where: BlueDyeTest.SUBUSER.eq(subUser.uid));
