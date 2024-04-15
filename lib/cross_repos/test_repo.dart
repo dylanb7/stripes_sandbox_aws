@@ -31,6 +31,9 @@ class BlueTest extends Test<BlueDyeObj> {
     fetchCurrentTest();
   }
 
+  String? group() =>
+      authUser.attributes[const CognitoUserAttributeKey.custom("group").key];
+
   Future<void> fetchCurrentTest() async {
     const fetchTest = "listBlueDyeTests";
     const gqlDocument = '''query FetchTest(\$id: ID!) {
@@ -132,6 +135,7 @@ class BlueTest extends Test<BlueDyeObj> {
     final GraphQLRequest<PaginatedResult<BlueDyeTest>> query =
         ModelQueries.list(BlueDyeTest.classType,
             where: BlueDyeTest.SUBUSER.eq(subUser.uid));
+    final String? groupName = group();
     try {
       final GraphQLResponse<PaginatedResult<BlueDyeTest>> tests =
           await Amplify.API.query(request: query).response;
@@ -145,7 +149,8 @@ class BlueTest extends Test<BlueDyeObj> {
           return;
         }
       } else {
-        final GraphQLRequest<BlueDyeTest> create = ModelMutations.create(value);
+        final GraphQLRequest<BlueDyeTest> create =
+            ModelMutations.create(value..copyWith(group: groupName));
         result = await Amplify.API.mutate(request: create).response;
         if (result.data == null) {
           safePrint(result.errors);
@@ -159,8 +164,10 @@ class BlueTest extends Test<BlueDyeObj> {
         await Amplify.API.mutate(request: delete).response;
       }
       List<BlueDyeTestLog> created = [];
+
       for (BlueDyeTestLog log in logs) {
-        final BlueDyeTestLog toCreate = log.copyWith(blueDyeTest: result.data);
+        final BlueDyeTestLog toCreate =
+            log.copyWith(blueDyeTest: result.data, group: group());
         final GraphQLRequest<BlueDyeTestLog> create =
             ModelMutations.create(toCreate);
         final GraphQLResponse<BlueDyeTestLog> createdLog =
@@ -189,16 +196,19 @@ class BlueTest extends Test<BlueDyeObj> {
         current!.logs!.lastIndexWhere((element) => element.isBlue);
 
     if (lastBlue == -1) return;
+
+    final String? groupName = group();
     final BlueDyeResponse res = BlueDyeResponse(
       stamp: current!.stamp,
       finishedEating: current!.finishedEating!,
       logs: current!.logs!
           .map((log) => BlueDyeResponseLog(
-                isBlue: log.isBlue,
-                detailResponseID: log.response?.id,
-                response: log.response,
-              ))
+              isBlue: log.isBlue,
+              detailResponseID: log.response?.id,
+              response: log.response,
+              group: groupName))
           .toList(),
+      group: groupName,
       subUserId: subUser.uid,
     );
     try {

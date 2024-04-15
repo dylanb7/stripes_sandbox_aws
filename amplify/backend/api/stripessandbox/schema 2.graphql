@@ -3,11 +3,10 @@ type SubUser
   @auth(
     rules: [
       { allow: owner }
-      { allow: groups, groupsField: "group", operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [read] }
     ]
   ) {
   id: ID!
-  group: String
   name: String!
   gender: String!
   birthYear: Int!
@@ -26,11 +25,10 @@ type Response
   @auth(
     rules: [
       { allow: owner }
-      { allow: groups, groupsField: "group", operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [read] }
     ]
   ) {
   id: ID!
-  group: String
   stamp: AWSDateTime!
   type: String!
   qid: String!
@@ -47,11 +45,10 @@ type DetailResponse
   @auth(
     rules: [
       { allow: owner }
-      { allow: groups, groupsField: "group", operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [read] }
     ]
   ) {
   id: ID!
-  group: String
   stamp: AWSDateTime!
   type: String
   description: String
@@ -64,11 +61,10 @@ type BlueDyeTest
   @auth(
     rules: [
       { allow: owner }
-      { allow: groups, groupsField: "group", operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [read] }
     ]
   ) {
   id: ID!
-  group: String
   stamp: AWSDateTime!
   finishedEating: Int
   logs: [BlueDyeTestLog] @hasMany(indexName: "byBlueDyeTest", fields: ["id"])
@@ -81,11 +77,10 @@ type BlueDyeResponse
   @auth(
     rules: [
       { allow: owner }
-      { allow: groups, groupsField: "group", operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [read] }
     ]
   ) {
   id: ID!
-  group: String
   stamp: AWSDateTime!
   finishedEating: Int!
   logs: [BlueDyeResponseLog]
@@ -98,11 +93,10 @@ type BlueDyeTestLog
   @auth(
     rules: [
       { allow: owner }
-      { allow: groups, groupsField: "group", operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [read] }
     ]
   ) {
   id: ID!
-  group: String
   isBlue: Boolean!
   blueDyeTestID: ID @index(name: "byBlueDyeTest")
   blueDyeTest: BlueDyeTest @belongsTo(fields: ["blueDyeTestID"])
@@ -115,11 +109,10 @@ type BlueDyeResponseLog
   @auth(
     rules: [
       { allow: owner }
-      { allow: groups, groupsField: "group", operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [read] }
     ]
   ) {
   id: ID!
-  group: String
   isBlue: Boolean!
   blueDyeResponseID: ID @index(name: "byBlueResponse")
   blueDyeResponse: BlueDyeResponse @belongsTo(fields: ["blueDyeResponseID"])

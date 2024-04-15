@@ -12,7 +12,7 @@ import 'package:stripes_sandbox_aws/models/DetailResponse.dart';
 import 'package:stripes_sandbox_aws/models/Response.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
 
-class Stamps extends StampRepo<repo.Response> {
+class LocalStamps extends StampRepo<repo.Response> {
   List<DetailResponse> details = [];
   List<Response> responses = [];
   List<BlueDyeResponse> blueDyeResponses = [];
@@ -21,11 +21,12 @@ class Stamps extends StampRepo<repo.Response> {
 
   final BehaviorSubject<List<repo.Response>> _controller = BehaviorSubject();
 
-  Stamps(
+  LocalStamps(
       {required super.authUser,
       required super.currentUser,
-      required super.questionRepo}) {
-    _controller.add([]);
+      required super.questionRepo,
+      DateTime? earliestFetched}) {
+    earliest = earliestFetched;
     fetchStamps();
   }
 
@@ -47,6 +48,7 @@ class Stamps extends StampRepo<repo.Response> {
   }
 
   fetchStamps({bool includePrevious = false}) async {
+    await db.ready;
     final TemporalDateTime earliestTime = earliest != null
         ? TemporalDateTime(earliest!)
         : TemporalDateTime(DateTime(0));

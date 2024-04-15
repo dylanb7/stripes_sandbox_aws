@@ -28,6 +28,7 @@ import 'package:collection/collection.dart';
 class Response extends amplify_core.Model {
   static const classType = const _ResponseModelType();
   final String id;
+  final String? _group;
   final amplify_core.TemporalDateTime? _stamp;
   final String? _type;
   final String? _qid;
@@ -51,6 +52,10 @@ class Response extends amplify_core.Model {
       return ResponseModelIdentifier(
         id: id
       );
+  }
+  
+  String? get group {
+    return _group;
   }
   
   amplify_core.TemporalDateTime get stamp {
@@ -133,11 +138,12 @@ class Response extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Response._internal({required this.id, required stamp, required type, required qid, textResponse, selected, numeric, all_selected, required subUserId, detailResponseID, createdAt, updatedAt}): _stamp = stamp, _type = type, _qid = qid, _textResponse = textResponse, _selected = selected, _numeric = numeric, _all_selected = all_selected, _subUserId = subUserId, _detailResponseID = detailResponseID, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Response._internal({required this.id, group, required stamp, required type, required qid, textResponse, selected, numeric, all_selected, required subUserId, detailResponseID, createdAt, updatedAt}): _group = group, _stamp = stamp, _type = type, _qid = qid, _textResponse = textResponse, _selected = selected, _numeric = numeric, _all_selected = all_selected, _subUserId = subUserId, _detailResponseID = detailResponseID, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Response({String? id, required amplify_core.TemporalDateTime stamp, required String type, required String qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, required String subUserId, String? detailResponseID}) {
+  factory Response({String? id, String? group, required amplify_core.TemporalDateTime stamp, required String type, required String qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, required String subUserId, String? detailResponseID}) {
     return Response._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      group: group,
       stamp: stamp,
       type: type,
       qid: qid,
@@ -158,6 +164,7 @@ class Response extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is Response &&
       id == other.id &&
+      _group == other._group &&
       _stamp == other._stamp &&
       _type == other._type &&
       _qid == other._qid &&
@@ -178,6 +185,7 @@ class Response extends amplify_core.Model {
     
     buffer.write("Response {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("group=" + "$_group" + ", ");
     buffer.write("stamp=" + (_stamp != null ? _stamp!.format() : "null") + ", ");
     buffer.write("type=" + "$_type" + ", ");
     buffer.write("qid=" + "$_qid" + ", ");
@@ -194,9 +202,10 @@ class Response extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Response copyWith({amplify_core.TemporalDateTime? stamp, String? type, String? qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, String? subUserId, String? detailResponseID}) {
+  Response copyWith({String? group, amplify_core.TemporalDateTime? stamp, String? type, String? qid, String? textResponse, int? selected, int? numeric, List<int>? all_selected, String? subUserId, String? detailResponseID}) {
     return Response._internal(
       id: id,
+      group: group ?? this.group,
       stamp: stamp ?? this.stamp,
       type: type ?? this.type,
       qid: qid ?? this.qid,
@@ -209,6 +218,7 @@ class Response extends amplify_core.Model {
   }
   
   Response copyWithModelFieldValues({
+    ModelFieldValue<String?>? group,
     ModelFieldValue<amplify_core.TemporalDateTime>? stamp,
     ModelFieldValue<String>? type,
     ModelFieldValue<String>? qid,
@@ -221,6 +231,7 @@ class Response extends amplify_core.Model {
   }) {
     return Response._internal(
       id: id,
+      group: group == null ? this.group : group.value,
       stamp: stamp == null ? this.stamp : stamp.value,
       type: type == null ? this.type : type.value,
       qid: qid == null ? this.qid : qid.value,
@@ -235,6 +246,7 @@ class Response extends amplify_core.Model {
   
   Response.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _group = json['group'],
       _stamp = json['stamp'] != null ? amplify_core.TemporalDateTime.fromString(json['stamp']) : null,
       _type = json['type'],
       _qid = json['qid'],
@@ -248,11 +260,12 @@ class Response extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'stamp': _stamp?.format(), 'type': _type, 'qid': _qid, 'textResponse': _textResponse, 'selected': _selected, 'numeric': _numeric, 'all_selected': _all_selected, 'subUserId': _subUserId, 'detailResponseID': _detailResponseID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'stamp': _stamp?.format(), 'type': _type, 'qid': _qid, 'textResponse': _textResponse, 'selected': _selected, 'numeric': _numeric, 'all_selected': _all_selected, 'subUserId': _subUserId, 'detailResponseID': _detailResponseID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'group': _group,
     'stamp': _stamp,
     'type': _type,
     'qid': _qid,
@@ -268,6 +281,7 @@ class Response extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<ResponseModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<ResponseModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final GROUP = amplify_core.QueryField(fieldName: "group");
   static final STAMP = amplify_core.QueryField(fieldName: "stamp");
   static final TYPE = amplify_core.QueryField(fieldName: "type");
   static final QID = amplify_core.QueryField(fieldName: "qid");
@@ -296,7 +310,7 @@ class Response extends amplify_core.Model {
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.GROUPS,
         groupClaim: "cognito:groups",
-        groups: [ "Admin" ],
+        groupsField: "groups",
         provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.READ
@@ -309,6 +323,12 @@ class Response extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Response.GROUP,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Response.STAMP,

@@ -27,6 +27,12 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
+
+#git:
+#     url: https://github.com/dylanb7/stripes_ui
+#     branch: master
+#
+
 dependencies:
   flutter:
     sdk: flutter
@@ -42,10 +48,9 @@ dependencies:
   amplify_api: ^1.7.0
   amplify_auth_cognito: ^1.7.2
   amplify_authenticator: ^1.5.4
-  amplify_datastore: ^1.7.0
   url_strategy: ^0.2.0
   sqflite_common_ffi_web: ^0.4.2+3
-  sqflite: ^2.3.2
+  sqflite: ^2.3.3
   sqflite_sqlcipher: ^2.2.1
   flutter_secure_storage: ^9.0.0
   rxdart: ^0.27.7

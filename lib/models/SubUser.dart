@@ -28,6 +28,7 @@ import 'package:collection/collection.dart';
 class SubUser extends amplify_core.Model {
   static const classType = const _SubUserModelType();
   final String id;
+  final String? _group;
   final String? _name;
   final String? _gender;
   final int? _birthYear;
@@ -51,6 +52,10 @@ class SubUser extends amplify_core.Model {
       return SubUserModelIdentifier(
         id: id
       );
+  }
+  
+  String? get group {
+    return _group;
   }
   
   String get name {
@@ -133,11 +138,12 @@ class SubUser extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const SubUser._internal({required this.id, required name, required gender, required birthYear, required isControl, blueDyeTestID, blueDyeTest, responses, detailResponses, blueDyeResponses, createdAt, updatedAt}): _name = name, _gender = gender, _birthYear = birthYear, _isControl = isControl, _blueDyeTestID = blueDyeTestID, _blueDyeTest = blueDyeTest, _responses = responses, _detailResponses = detailResponses, _blueDyeResponses = blueDyeResponses, _createdAt = createdAt, _updatedAt = updatedAt;
+  const SubUser._internal({required this.id, group, required name, required gender, required birthYear, required isControl, blueDyeTestID, blueDyeTest, responses, detailResponses, blueDyeResponses, createdAt, updatedAt}): _group = group, _name = name, _gender = gender, _birthYear = birthYear, _isControl = isControl, _blueDyeTestID = blueDyeTestID, _blueDyeTest = blueDyeTest, _responses = responses, _detailResponses = detailResponses, _blueDyeResponses = blueDyeResponses, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory SubUser({String? id, required String name, required String gender, required int birthYear, required bool isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
+  factory SubUser({String? id, String? group, required String name, required String gender, required int birthYear, required bool isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
     return SubUser._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      group: group,
       name: name,
       gender: gender,
       birthYear: birthYear,
@@ -158,6 +164,7 @@ class SubUser extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is SubUser &&
       id == other.id &&
+      _group == other._group &&
       _name == other._name &&
       _gender == other._gender &&
       _birthYear == other._birthYear &&
@@ -178,6 +185,7 @@ class SubUser extends amplify_core.Model {
     
     buffer.write("SubUser {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("group=" + "$_group" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("gender=" + "$_gender" + ", ");
     buffer.write("birthYear=" + (_birthYear != null ? _birthYear!.toString() : "null") + ", ");
@@ -190,9 +198,10 @@ class SubUser extends amplify_core.Model {
     return buffer.toString();
   }
   
-  SubUser copyWith({String? name, String? gender, int? birthYear, bool? isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
+  SubUser copyWith({String? group, String? name, String? gender, int? birthYear, bool? isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
     return SubUser._internal(
       id: id,
+      group: group ?? this.group,
       name: name ?? this.name,
       gender: gender ?? this.gender,
       birthYear: birthYear ?? this.birthYear,
@@ -205,6 +214,7 @@ class SubUser extends amplify_core.Model {
   }
   
   SubUser copyWithModelFieldValues({
+    ModelFieldValue<String?>? group,
     ModelFieldValue<String>? name,
     ModelFieldValue<String>? gender,
     ModelFieldValue<int>? birthYear,
@@ -217,6 +227,7 @@ class SubUser extends amplify_core.Model {
   }) {
     return SubUser._internal(
       id: id,
+      group: group == null ? this.group : group.value,
       name: name == null ? this.name : name.value,
       gender: gender == null ? this.gender : gender.value,
       birthYear: birthYear == null ? this.birthYear : birthYear.value,
@@ -231,6 +242,7 @@ class SubUser extends amplify_core.Model {
   
   SubUser.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _group = json['group'],
       _name = json['name'],
       _gender = json['gender'],
       _birthYear = (json['birthYear'] as num?)?.toInt(),
@@ -261,11 +273,12 @@ class SubUser extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'gender': _gender, 'birthYear': _birthYear, 'isControl': _isControl, 'blueDyeTestID': _blueDyeTestID, 'blueDyeTest': _blueDyeTest?.toJson(), 'responses': _responses?.map((Response? e) => e?.toJson()).toList(), 'detailResponses': _detailResponses?.map((DetailResponse? e) => e?.toJson()).toList(), 'blueDyeResponses': _blueDyeResponses?.map((BlueDyeResponse? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'name': _name, 'gender': _gender, 'birthYear': _birthYear, 'isControl': _isControl, 'blueDyeTestID': _blueDyeTestID, 'blueDyeTest': _blueDyeTest?.toJson(), 'responses': _responses?.map((Response? e) => e?.toJson()).toList(), 'detailResponses': _detailResponses?.map((DetailResponse? e) => e?.toJson()).toList(), 'blueDyeResponses': _blueDyeResponses?.map((BlueDyeResponse? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'group': _group,
     'name': _name,
     'gender': _gender,
     'birthYear': _birthYear,
@@ -281,6 +294,7 @@ class SubUser extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<SubUserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SubUserModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final GROUP = amplify_core.QueryField(fieldName: "group");
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final GENDER = amplify_core.QueryField(fieldName: "gender");
   static final BIRTHYEAR = amplify_core.QueryField(fieldName: "birthYear");
@@ -317,7 +331,7 @@ class SubUser extends amplify_core.Model {
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.GROUPS,
         groupClaim: "cognito:groups",
-        groups: [ "Admin" ],
+        groupsField: "groups",
         provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.READ
@@ -325,6 +339,12 @@ class SubUser extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: SubUser.GROUP,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: SubUser.NAME,

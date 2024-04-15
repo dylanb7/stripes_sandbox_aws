@@ -28,6 +28,7 @@ import 'package:collection/collection.dart';
 class BlueDyeTest extends amplify_core.Model {
   static const classType = const _BlueDyeTestModelType();
   final String id;
+  final String? _group;
   final amplify_core.TemporalDateTime? _stamp;
   final int? _finishedEating;
   final List<BlueDyeTestLog>? _logs;
@@ -46,6 +47,10 @@ class BlueDyeTest extends amplify_core.Model {
       return BlueDyeTestModelIdentifier(
         id: id
       );
+  }
+  
+  String? get group {
+    return _group;
   }
   
   amplify_core.TemporalDateTime get stamp {
@@ -90,11 +95,12 @@ class BlueDyeTest extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const BlueDyeTest._internal({required this.id, required stamp, finishedEating, logs, required subUser, createdAt, updatedAt}): _stamp = stamp, _finishedEating = finishedEating, _logs = logs, _subUser = subUser, _createdAt = createdAt, _updatedAt = updatedAt;
+  const BlueDyeTest._internal({required this.id, group, required stamp, finishedEating, logs, required subUser, createdAt, updatedAt}): _group = group, _stamp = stamp, _finishedEating = finishedEating, _logs = logs, _subUser = subUser, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory BlueDyeTest({String? id, required amplify_core.TemporalDateTime stamp, int? finishedEating, List<BlueDyeTestLog>? logs, required SubUser subUser}) {
+  factory BlueDyeTest({String? id, String? group, required amplify_core.TemporalDateTime stamp, int? finishedEating, List<BlueDyeTestLog>? logs, required SubUser subUser}) {
     return BlueDyeTest._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      group: group,
       stamp: stamp,
       finishedEating: finishedEating,
       logs: logs != null ? List<BlueDyeTestLog>.unmodifiable(logs) : logs,
@@ -110,6 +116,7 @@ class BlueDyeTest extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is BlueDyeTest &&
       id == other.id &&
+      _group == other._group &&
       _stamp == other._stamp &&
       _finishedEating == other._finishedEating &&
       DeepCollectionEquality().equals(_logs, other._logs) &&
@@ -125,6 +132,7 @@ class BlueDyeTest extends amplify_core.Model {
     
     buffer.write("BlueDyeTest {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("group=" + "$_group" + ", ");
     buffer.write("stamp=" + (_stamp != null ? _stamp!.format() : "null") + ", ");
     buffer.write("finishedEating=" + (_finishedEating != null ? _finishedEating!.toString() : "null") + ", ");
     buffer.write("subUser=" + (_subUser != null ? _subUser!.toString() : "null") + ", ");
@@ -135,9 +143,10 @@ class BlueDyeTest extends amplify_core.Model {
     return buffer.toString();
   }
   
-  BlueDyeTest copyWith({amplify_core.TemporalDateTime? stamp, int? finishedEating, List<BlueDyeTestLog>? logs, SubUser? subUser}) {
+  BlueDyeTest copyWith({String? group, amplify_core.TemporalDateTime? stamp, int? finishedEating, List<BlueDyeTestLog>? logs, SubUser? subUser}) {
     return BlueDyeTest._internal(
       id: id,
+      group: group ?? this.group,
       stamp: stamp ?? this.stamp,
       finishedEating: finishedEating ?? this.finishedEating,
       logs: logs ?? this.logs,
@@ -145,6 +154,7 @@ class BlueDyeTest extends amplify_core.Model {
   }
   
   BlueDyeTest copyWithModelFieldValues({
+    ModelFieldValue<String?>? group,
     ModelFieldValue<amplify_core.TemporalDateTime>? stamp,
     ModelFieldValue<int?>? finishedEating,
     ModelFieldValue<List<BlueDyeTestLog>?>? logs,
@@ -152,6 +162,7 @@ class BlueDyeTest extends amplify_core.Model {
   }) {
     return BlueDyeTest._internal(
       id: id,
+      group: group == null ? this.group : group.value,
       stamp: stamp == null ? this.stamp : stamp.value,
       finishedEating: finishedEating == null ? this.finishedEating : finishedEating.value,
       logs: logs == null ? this.logs : logs.value,
@@ -161,6 +172,7 @@ class BlueDyeTest extends amplify_core.Model {
   
   BlueDyeTest.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _group = json['group'],
       _stamp = json['stamp'] != null ? amplify_core.TemporalDateTime.fromString(json['stamp']) : null,
       _finishedEating = (json['finishedEating'] as num?)?.toInt(),
       _logs = json['logs'] is List
@@ -176,11 +188,12 @@ class BlueDyeTest extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'stamp': _stamp?.format(), 'finishedEating': _finishedEating, 'logs': _logs?.map((BlueDyeTestLog? e) => e?.toJson()).toList(), 'subUser': _subUser?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'stamp': _stamp?.format(), 'finishedEating': _finishedEating, 'logs': _logs?.map((BlueDyeTestLog? e) => e?.toJson()).toList(), 'subUser': _subUser?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'group': _group,
     'stamp': _stamp,
     'finishedEating': _finishedEating,
     'logs': _logs,
@@ -191,6 +204,7 @@ class BlueDyeTest extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<BlueDyeTestModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<BlueDyeTestModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final GROUP = amplify_core.QueryField(fieldName: "group");
   static final STAMP = amplify_core.QueryField(fieldName: "stamp");
   static final FINISHEDEATING = amplify_core.QueryField(fieldName: "finishedEating");
   static final LOGS = amplify_core.QueryField(
@@ -218,7 +232,7 @@ class BlueDyeTest extends amplify_core.Model {
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.GROUPS,
         groupClaim: "cognito:groups",
-        groups: [ "Admin" ],
+        groupsField: "groups",
         provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.READ
@@ -226,6 +240,12 @@ class BlueDyeTest extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: BlueDyeTest.GROUP,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: BlueDyeTest.STAMP,

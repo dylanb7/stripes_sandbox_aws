@@ -1,0 +1,92 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-stripessandbox-staging-182232-authRole",
+      "UnauthRoleArn": "arn:aws:iam::771574510585:role/amplify-stripessandbox-staging-182232-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::771574510585:role/amplify-stripessandbox-staging-182232-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-stripessandbox-staging-182232-deployment",
+      "UnauthRoleName": "amplify-stripessandbox-staging-182232-unauthRole",
+      "StackName": "amplify-stripessandbox-staging-182232",
+      "StackId": "arn:aws:cloudformation:us-east-2:771574510585:stack/amplify-stripessandbox-staging-182232/a161d370-742c-11ee-a787-022237916e0b",
+      "AmplifyAppId": "d2a34yxijatjpc"
+    }
+  },
+  "auth": {
+    "stripessandbox9f7545ba": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-stripessandbox-staging-182232-deployment/amplify-cfn-templates/auth/stripessandbox9f7545ba-cloudformation-template.json",
+        "logicalId": "authstripessandbox9f7545ba"
+      },
+      "lastPushTimeStamp": "2024-03-18T21:09:44.721Z",
+      "output": {
+        "UserPoolId": "us-east-2_ZG4jHW4VK",
+        "AppClientIDWeb": "7tf60h2la5fkeupdltbcekqon8",
+        "AppClientID": "2jc78ad47lqr327ce3p5cfso15",
+        "IdentityPoolId": "us-east-2:1e4dbae7-781d-4560-a3ed-b7df455a9e55",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-2:771574510585:userpool/us-east-2_ZG4jHW4VK",
+        "IdentityPoolName": "stripessandbox9f7545ba_identitypool_9f7545ba__staging",
+        "UserPoolName": "stripessandbox9f7545ba_userpool_9f7545ba"
+      },
+      "lastPushDirHash": "OXL/+RiNmvGyOPNoUbMjFiZO0Xo="
+    }
+  },
+  "api": {
+    "stripessandbox": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "stripessandbox9f7545ba"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authstripessandbox9f7545ba"
+            }
+          },
+          "additionalAuthenticationProviders": []
+        },
+        "GraphQLAPIIdOutput": "xdh4zavk7zdfpfuzjlpjc7wpai",
+        "GraphQLAPIEndpointOutput": "https://qrilonfz5zfopdmfaknkulrt4m.appsync-api.us-east-2.amazonaws.com/graphql"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-stripessandbox-staging-182232-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apistripessandbox"
+      },
+      "lastPushTimeStamp": "2024-03-18T21:09:46.291Z",
+      "lastPushDirHash": "uPetKK0cUKhW89hpTZbrAMEaXeM="
+    }
+  }
+}

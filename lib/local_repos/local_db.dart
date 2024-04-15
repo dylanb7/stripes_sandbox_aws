@@ -128,23 +128,26 @@ class LocalDB {
 
   late Database _db;
 
+  late Future ready;
+
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   LocalDB._internal() {
-    init();
+    ready = init();
   }
 
   factory LocalDB() => _instance;
 
   init() async {
     final String basePath = await getDatabasesPath();
-
     var factoryWithLogs = SqfliteDatabaseFactoryLogger(databaseFactory,
         options:
             SqfliteLoggerOptions(type: SqfliteDatabaseFactoryLoggerType.all));
 
-    _db = await openDatabase(join(basePath, dbName),
-        password: await storage.read(key: accessKey), singleInstance: true);
+    _db = await factoryWithLogs.openDatabase(
+      join(basePath,
+          dbName), /*password: await storage.read(key: accessKey), singleInstance: true*/
+    );
 
     _initTables();
   }
@@ -175,7 +178,8 @@ class LocalDB {
   Future<bool> addSubUser(SubUser subUser) async {
     final Map<String, dynamic> values = subUser.toJson();
     values[isControl] = boolToInt(subUser.isControl);
-    final retId = await _db.insert(subUserTable, values);
+    final retId =
+        await _db.insert(subUserTable, matchKeys(values, subUserSchema.keys));
     return retId != 0;
   }
 
@@ -188,7 +192,8 @@ class LocalDB {
   Future<bool> updateSubUser(SubUser subUser) async {
     final Map<String, dynamic> values = subUser.toJson();
     values[isControl] = boolToInt(subUser.isControl);
-    final retId = await _db.update(subUserTable, values,
+    final retId = await _db.update(
+        subUserTable, matchKeys(values, subUserSchema.keys),
         where: '$subUserId = ?', whereArgs: [subUser.id]);
     return retId != 0;
   }
@@ -198,8 +203,8 @@ class LocalDB {
     final List<Map<String, Object?>> values = await _db.query(subUserTable);
     for (final value in values) {
       final int control = value[isControl] is int ? value[isControl] as int : 0;
-      value[isControl] = intToBool(control);
-      final SubUser newSub = SubUser.fromJson(value);
+      final SubUser newSub =
+          SubUser.fromJson({...value, isControl: intToBool(control)});
       subUsers.add(newSub);
     }
     return subUsers;
@@ -210,9 +215,14 @@ class LocalDB {
     try {
       int totalAdditions = 0;
       await _db.transaction((txn) async {
-        totalAdditions += await txn.insert(detailTable, detail.toJson());
+        Map<String, dynamic> detailJson =
+            matchKeys(detail.toJson(), detailSchema.keys);
+
+        totalAdditions += await txn.insert(detailTable, detailJson);
         for (final child in children) {
-          totalAdditions += await txn.insert(responseTable, child.toJson());
+          Map<String, dynamic> toInsert =
+              matchKeys(child.toJson(), responseSchema.keys);
+          totalAdditions += await txn.insert(responseTable, toInsert);
         }
       });
       return totalAdditions > 0;
@@ -242,12 +252,16 @@ class LocalDB {
       int alterations = 0;
       int deletions = 0;
       await _db.transaction((txn) async {
-        alterations += await txn.update(detailTable, detail.toJson(),
+        final Map<String, dynamic> detailJson =
+            matchKeys(detail.toJson(), detailSchema.keys);
+        alterations += await txn.update(detailTable, detailJson,
             where: '$id = ?', whereArgs: [detail.id]);
         deletions = await txn.delete(responseTable,
             where: '$detailResponseID = ?', whereArgs: [detail.id]);
         for (final child in children) {
-          alterations += await txn.insert(responseTable, child.toJson());
+          final Map<String, dynamic> responseJson =
+              matchKeys(child.toJson(), responseSchema.keys);
+          alterations += await txn.insert(responseTable, responseJson);
         }
       });
       return alterations > 0 || deletions > 0;
@@ -292,7 +306,8 @@ class LocalDB {
   }
 
   Future<bool> addResponse(Response response) async {
-    final int added = await _db.insert(responseTable, response.toJson());
+    final int added = await _db.insert(
+        responseTable, matchKeys(response.toJson(), responseSchema.keys));
     return added > 0;
   }
 
@@ -303,7 +318,8 @@ class LocalDB {
   }
 
   Future<bool> updateResponse(Response response) async {
-    final int updated = await _db.update(responseTable, response.toJson(),
+    final int updated = await _db.update(
+        responseTable, matchKeys(response.toJson(), responseSchema.keys),
         where: '$id = ?', whereArgs: [response.id]);
     return updated > 0;
   }
@@ -331,12 +347,14 @@ class LocalDB {
 
     int count = 0;
     _db.transaction((txn) async {
-      count += await txn.insert(blueDyeResponseTable, blueDyeResponse.toJson());
+      count += await txn.insert(blueDyeResponseTable,
+          matchKeys(blueDyeResponse.toJson(), blueDyeResponseSchema.keys));
       for (final log in logs) {
         final logPacket = log.toJson();
         final bool blue = logPacket[isBlue] ?? false;
         logPacket[isBlue] = boolToInt(blue);
-        count += await txn.insert(blueDyeResponseLogTable, logPacket);
+        count += await txn.insert(blueDyeResponseLogTable,
+            matchKeys(logPacket, blueDyeResponseLogSchema.keys));
       }
     });
     return count > 0;
@@ -358,7 +376,8 @@ class LocalDB {
     final List<BlueDyeResponseLog> logs = blueDyeResponse.logs ?? [];
     int count = 0;
     _db.transaction((txn) async {
-      count += await txn.update(blueDyeResponseTable, blueDyeResponse.toJson(),
+      count += await txn.update(blueDyeResponseTable,
+          matchKeys(blueDyeResponse.toJson(), blueDyeResponseSchema.keys),
           where: '$id = ?', whereArgs: [blueDyeResponse.id]);
       await txn.delete(blueDyeResponseLogTable,
           where: '$blueDyeResponseID = ?', whereArgs: [blueDyeResponse.id]);
@@ -366,7 +385,8 @@ class LocalDB {
         final logPacket = log.toJson();
         final bool blue = logPacket[isBlue] ?? false;
         logPacket[isBlue] = boolToInt(blue);
-        count += await txn.insert(blueDyeResponseLogTable, logPacket);
+        count += await txn.insert(blueDyeResponseLogTable,
+            matchKeys(logPacket, blueDyeResponseLogSchema.keys));
       }
     });
 
@@ -393,8 +413,8 @@ class LocalDB {
           whereArgs: [res.id]);
       for (final logBlob in logBlobs) {
         final int blue = logBlob[isBlue] is int ? logBlob[isBlue] as int : 0;
-        logBlob[isBlue] = intToBool(blue);
-        final BlueDyeResponseLog log = BlueDyeResponseLog.fromJson(logBlob);
+        final BlueDyeResponseLog log =
+            BlueDyeResponseLog.fromJson({...logBlob, isBlue: intToBool(blue)});
         final detailBlob = await _db.query(detailTable,
             where: '$id = ?', whereArgs: [log.detailResponseID]);
         DetailResponse? attachedDetail = detailBlob.firstOrNull != null
@@ -422,10 +442,10 @@ class LocalDB {
               where: '$subUserId = ?', whereArgs: [subId]) >
           0;
     }
-    final List<Map<String, Object?>> results =
-        await _db.query(blueDyeTestTable);
+    final List<Map<String, Object?>> results = await _db
+        .query(blueDyeTestTable, where: '$subUserId = ?', whereArgs: [subId]);
     if (results.isNotEmpty) {
-      if (results[0][id] == test.id) return updateBlueDyeTest(test);
+      if (results[0][id] == test.id) return _updateBlueDyeTest(test);
       await _db.delete(blueDyeTestTable,
           where: '$subUserId = ?', whereArgs: [subId]);
       return setBlueDyeTest(test, subId);
@@ -433,27 +453,31 @@ class LocalDB {
     int count = 0;
     final List<BlueDyeTestLog> logs = test.logs ?? [];
     _db.transaction((txn) async {
-      count += await txn.insert(blueDyeTestTable, test.toJson());
+      count += await txn.insert(
+          blueDyeTestTable, matchKeys(test.toJson(), blueDyeTestSchema.keys));
       for (final log in logs) {
         final logBlob = log.toJson();
         logBlob[isBlue] = boolToInt(logBlob[isBlue]);
-        count += await txn.insert(blueDyeTestLogTable, logBlob);
+        count += await txn.insert(
+            blueDyeTestLogTable, matchKeys(logBlob, blueDyeTestLogSchema.keys));
       }
     });
     return count > 0;
   }
 
-  Future<bool> updateBlueDyeTest(BlueDyeTest test) async {
+  Future<bool> _updateBlueDyeTest(BlueDyeTest test) async {
     int count = 0;
     final List<BlueDyeTestLog> logs = test.logs ?? [];
     _db.transaction((txn) async {
-      count += await txn.update(blueDyeTestTable, test.toJson());
+      count += await txn.update(
+          blueDyeTestTable, matchKeys(test.toJson(), blueDyeTestSchema.keys));
       await txn.delete(blueDyeTestLogTable,
           where: '$blueDyeTestID = ?', whereArgs: [test.id]);
       for (final log in logs) {
         final logBlob = log.toJson();
         logBlob[isBlue] = boolToInt(logBlob[isBlue]);
-        count += await txn.insert(blueDyeTestLogTable, logBlob);
+        count += await txn.insert(
+            blueDyeTestLogTable, matchKeys(logBlob, blueDyeTestLogSchema.keys));
       }
     });
     return count > 0;
@@ -471,8 +495,8 @@ class LocalDB {
     final List<BlueDyeTestLog> logs = [];
     for (final logBlob in logBlobs) {
       final int blue = logBlob[isBlue] is int ? logBlob[isBlue] as int : 0;
-      logBlob[isBlue] = intToBool(blue);
-      final BlueDyeTestLog log = BlueDyeTestLog.fromJson(logBlob);
+      final BlueDyeTestLog log =
+          BlueDyeTestLog.fromJson({...logBlob, isBlue: intToBool(blue)});
       final List<Map<String, Object?>> detailBlobs = await _db.query(
           detailTable,
           where: '$id = ?',
@@ -494,11 +518,16 @@ class LocalDB {
   }
 }
 
+Map<String, dynamic> matchKeys(
+    Map<String, dynamic> toEnter, Iterable<String> schemaKeys) {
+  return toEnter..removeWhere((key, value) => !schemaKeys.contains(key));
+}
+
 String whereFromBounds({TemporalDateTime? earliest, TemporalDateTime? last}) {
   if (earliest == null && last == null) return '';
-  if (earliest == null) return '$stamp >= ?';
-  if (last == null) return '$stamp <= ?';
-  return '$stamp >= ? AND $stamp <= ?';
+  if (earliest == null) return '$stamp <= ?';
+  if (last == null) return '$stamp >= ?';
+  return '$stamp <= ? AND $stamp >= ?';
 }
 
 List<String> whereArgsFromBounds(

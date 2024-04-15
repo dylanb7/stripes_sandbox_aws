@@ -27,6 +27,7 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class BlueDyeResponseLog extends amplify_core.Model {
   static const classType = const _BlueDyeResponseLogModelType();
   final String id;
+  final String? _group;
   final bool? _isBlue;
   final BlueDyeResponse? _blueDyeResponse;
   final String? _detailResponseID;
@@ -45,6 +46,10 @@ class BlueDyeResponseLog extends amplify_core.Model {
       return BlueDyeResponseLogModelIdentifier(
         id: id
       );
+  }
+  
+  String? get group {
+    return _group;
   }
   
   bool get isBlue {
@@ -80,11 +85,12 @@ class BlueDyeResponseLog extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const BlueDyeResponseLog._internal({required this.id, required isBlue, blueDyeResponse, detailResponseID, response, createdAt, updatedAt}): _isBlue = isBlue, _blueDyeResponse = blueDyeResponse, _detailResponseID = detailResponseID, _response = response, _createdAt = createdAt, _updatedAt = updatedAt;
+  const BlueDyeResponseLog._internal({required this.id, group, required isBlue, blueDyeResponse, detailResponseID, response, createdAt, updatedAt}): _group = group, _isBlue = isBlue, _blueDyeResponse = blueDyeResponse, _detailResponseID = detailResponseID, _response = response, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory BlueDyeResponseLog({String? id, required bool isBlue, BlueDyeResponse? blueDyeResponse, String? detailResponseID, DetailResponse? response}) {
+  factory BlueDyeResponseLog({String? id, String? group, required bool isBlue, BlueDyeResponse? blueDyeResponse, String? detailResponseID, DetailResponse? response}) {
     return BlueDyeResponseLog._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      group: group,
       isBlue: isBlue,
       blueDyeResponse: blueDyeResponse,
       detailResponseID: detailResponseID,
@@ -100,6 +106,7 @@ class BlueDyeResponseLog extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is BlueDyeResponseLog &&
       id == other.id &&
+      _group == other._group &&
       _isBlue == other._isBlue &&
       _blueDyeResponse == other._blueDyeResponse &&
       _detailResponseID == other._detailResponseID &&
@@ -115,6 +122,7 @@ class BlueDyeResponseLog extends amplify_core.Model {
     
     buffer.write("BlueDyeResponseLog {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("group=" + "$_group" + ", ");
     buffer.write("isBlue=" + (_isBlue != null ? _isBlue!.toString() : "null") + ", ");
     buffer.write("blueDyeResponse=" + (_blueDyeResponse != null ? _blueDyeResponse!.toString() : "null") + ", ");
     buffer.write("detailResponseID=" + "$_detailResponseID" + ", ");
@@ -125,9 +133,10 @@ class BlueDyeResponseLog extends amplify_core.Model {
     return buffer.toString();
   }
   
-  BlueDyeResponseLog copyWith({bool? isBlue, BlueDyeResponse? blueDyeResponse, String? detailResponseID, DetailResponse? response}) {
+  BlueDyeResponseLog copyWith({String? group, bool? isBlue, BlueDyeResponse? blueDyeResponse, String? detailResponseID, DetailResponse? response}) {
     return BlueDyeResponseLog._internal(
       id: id,
+      group: group ?? this.group,
       isBlue: isBlue ?? this.isBlue,
       blueDyeResponse: blueDyeResponse ?? this.blueDyeResponse,
       detailResponseID: detailResponseID ?? this.detailResponseID,
@@ -135,6 +144,7 @@ class BlueDyeResponseLog extends amplify_core.Model {
   }
   
   BlueDyeResponseLog copyWithModelFieldValues({
+    ModelFieldValue<String?>? group,
     ModelFieldValue<bool>? isBlue,
     ModelFieldValue<BlueDyeResponse?>? blueDyeResponse,
     ModelFieldValue<String?>? detailResponseID,
@@ -142,6 +152,7 @@ class BlueDyeResponseLog extends amplify_core.Model {
   }) {
     return BlueDyeResponseLog._internal(
       id: id,
+      group: group == null ? this.group : group.value,
       isBlue: isBlue == null ? this.isBlue : isBlue.value,
       blueDyeResponse: blueDyeResponse == null ? this.blueDyeResponse : blueDyeResponse.value,
       detailResponseID: detailResponseID == null ? this.detailResponseID : detailResponseID.value,
@@ -151,6 +162,7 @@ class BlueDyeResponseLog extends amplify_core.Model {
   
   BlueDyeResponseLog.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _group = json['group'],
       _isBlue = json['isBlue'],
       _blueDyeResponse = json['blueDyeResponse']?['serializedData'] != null
         ? BlueDyeResponse.fromJson(new Map<String, dynamic>.from(json['blueDyeResponse']['serializedData']))
@@ -163,11 +175,12 @@ class BlueDyeResponseLog extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'isBlue': _isBlue, 'blueDyeResponse': _blueDyeResponse?.toJson(), 'detailResponseID': _detailResponseID, 'response': _response?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'isBlue': _isBlue, 'blueDyeResponse': _blueDyeResponse?.toJson(), 'detailResponseID': _detailResponseID, 'response': _response?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'group': _group,
     'isBlue': _isBlue,
     'blueDyeResponse': _blueDyeResponse,
     'detailResponseID': _detailResponseID,
@@ -178,6 +191,7 @@ class BlueDyeResponseLog extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<BlueDyeResponseLogModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<BlueDyeResponseLogModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final GROUP = amplify_core.QueryField(fieldName: "group");
   static final ISBLUE = amplify_core.QueryField(fieldName: "isBlue");
   static final BLUEDYERESPONSE = amplify_core.QueryField(
     fieldName: "blueDyeResponse",
@@ -205,7 +219,7 @@ class BlueDyeResponseLog extends amplify_core.Model {
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.GROUPS,
         groupClaim: "cognito:groups",
-        groups: [ "Admin" ],
+        groupsField: "groups",
         provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.READ
@@ -217,6 +231,12 @@ class BlueDyeResponseLog extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: BlueDyeResponseLog.GROUP,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: BlueDyeResponseLog.ISBLUE,

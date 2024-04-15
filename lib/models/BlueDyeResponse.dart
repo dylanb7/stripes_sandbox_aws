@@ -28,6 +28,7 @@ import 'package:collection/collection.dart';
 class BlueDyeResponse extends amplify_core.Model {
   static const classType = const _BlueDyeResponseModelType();
   final String id;
+  final String? _group;
   final amplify_core.TemporalDateTime? _stamp;
   final int? _finishedEating;
   final List<BlueDyeResponseLog>? _logs;
@@ -46,6 +47,10 @@ class BlueDyeResponse extends amplify_core.Model {
       return BlueDyeResponseModelIdentifier(
         id: id
       );
+  }
+  
+  String? get group {
+    return _group;
   }
   
   amplify_core.TemporalDateTime get stamp {
@@ -99,11 +104,12 @@ class BlueDyeResponse extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const BlueDyeResponse._internal({required this.id, required stamp, required finishedEating, logs, required subUserId, createdAt, updatedAt}): _stamp = stamp, _finishedEating = finishedEating, _logs = logs, _subUserId = subUserId, _createdAt = createdAt, _updatedAt = updatedAt;
+  const BlueDyeResponse._internal({required this.id, group, required stamp, required finishedEating, logs, required subUserId, createdAt, updatedAt}): _group = group, _stamp = stamp, _finishedEating = finishedEating, _logs = logs, _subUserId = subUserId, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory BlueDyeResponse({String? id, required amplify_core.TemporalDateTime stamp, required int finishedEating, List<BlueDyeResponseLog>? logs, required String subUserId}) {
+  factory BlueDyeResponse({String? id, String? group, required amplify_core.TemporalDateTime stamp, required int finishedEating, List<BlueDyeResponseLog>? logs, required String subUserId}) {
     return BlueDyeResponse._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      group: group,
       stamp: stamp,
       finishedEating: finishedEating,
       logs: logs != null ? List<BlueDyeResponseLog>.unmodifiable(logs) : logs,
@@ -119,6 +125,7 @@ class BlueDyeResponse extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is BlueDyeResponse &&
       id == other.id &&
+      _group == other._group &&
       _stamp == other._stamp &&
       _finishedEating == other._finishedEating &&
       DeepCollectionEquality().equals(_logs, other._logs) &&
@@ -134,6 +141,7 @@ class BlueDyeResponse extends amplify_core.Model {
     
     buffer.write("BlueDyeResponse {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("group=" + "$_group" + ", ");
     buffer.write("stamp=" + (_stamp != null ? _stamp!.format() : "null") + ", ");
     buffer.write("finishedEating=" + (_finishedEating != null ? _finishedEating!.toString() : "null") + ", ");
     buffer.write("subUserId=" + "$_subUserId" + ", ");
@@ -144,9 +152,10 @@ class BlueDyeResponse extends amplify_core.Model {
     return buffer.toString();
   }
   
-  BlueDyeResponse copyWith({amplify_core.TemporalDateTime? stamp, int? finishedEating, List<BlueDyeResponseLog>? logs, String? subUserId}) {
+  BlueDyeResponse copyWith({String? group, amplify_core.TemporalDateTime? stamp, int? finishedEating, List<BlueDyeResponseLog>? logs, String? subUserId}) {
     return BlueDyeResponse._internal(
       id: id,
+      group: group ?? this.group,
       stamp: stamp ?? this.stamp,
       finishedEating: finishedEating ?? this.finishedEating,
       logs: logs ?? this.logs,
@@ -154,6 +163,7 @@ class BlueDyeResponse extends amplify_core.Model {
   }
   
   BlueDyeResponse copyWithModelFieldValues({
+    ModelFieldValue<String?>? group,
     ModelFieldValue<amplify_core.TemporalDateTime>? stamp,
     ModelFieldValue<int>? finishedEating,
     ModelFieldValue<List<BlueDyeResponseLog>?>? logs,
@@ -161,6 +171,7 @@ class BlueDyeResponse extends amplify_core.Model {
   }) {
     return BlueDyeResponse._internal(
       id: id,
+      group: group == null ? this.group : group.value,
       stamp: stamp == null ? this.stamp : stamp.value,
       finishedEating: finishedEating == null ? this.finishedEating : finishedEating.value,
       logs: logs == null ? this.logs : logs.value,
@@ -170,6 +181,7 @@ class BlueDyeResponse extends amplify_core.Model {
   
   BlueDyeResponse.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _group = json['group'],
       _stamp = json['stamp'] != null ? amplify_core.TemporalDateTime.fromString(json['stamp']) : null,
       _finishedEating = (json['finishedEating'] as num?)?.toInt(),
       _logs = json['logs'] is List
@@ -183,11 +195,12 @@ class BlueDyeResponse extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'stamp': _stamp?.format(), 'finishedEating': _finishedEating, 'logs': _logs?.map((BlueDyeResponseLog? e) => e?.toJson()).toList(), 'subUserId': _subUserId, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'stamp': _stamp?.format(), 'finishedEating': _finishedEating, 'logs': _logs?.map((BlueDyeResponseLog? e) => e?.toJson()).toList(), 'subUserId': _subUserId, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'group': _group,
     'stamp': _stamp,
     'finishedEating': _finishedEating,
     'logs': _logs,
@@ -198,6 +211,7 @@ class BlueDyeResponse extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<BlueDyeResponseModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<BlueDyeResponseModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final GROUP = amplify_core.QueryField(fieldName: "group");
   static final STAMP = amplify_core.QueryField(fieldName: "stamp");
   static final FINISHEDEATING = amplify_core.QueryField(fieldName: "finishedEating");
   static final LOGS = amplify_core.QueryField(
@@ -223,7 +237,7 @@ class BlueDyeResponse extends amplify_core.Model {
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.GROUPS,
         groupClaim: "cognito:groups",
-        groups: [ "Admin" ],
+        groupsField: "groups",
         provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.READ
@@ -235,6 +249,12 @@ class BlueDyeResponse extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: BlueDyeResponse.GROUP,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: BlueDyeResponse.STAMP,

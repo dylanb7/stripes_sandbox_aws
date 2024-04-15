@@ -1,0 +1,15 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-stripessandbox-staging-182232-authRole",
+      "UnauthRoleArn": "arn:aws:iam::771574510585:role/amplify-stripessandbox-staging-182232-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::771574510585:role/amplify-stripessandbox-staging-182232-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-stripessandbox-staging-182232-deployment",
+      "UnauthRoleName": "amplify-stripessandbox-staging-182232-unauthRole",
+      "StackName": "amplify-stripessandbox-staging-182232",
+      "StackId": "arn:aws:cloudformation:us-east-2:771574510585:stack/amplify-stripessandbox-staging-182232/a161d370-742c-11ee-a787-022237916e0b",
+      "AmplifyAppId": "d2a34yxijatjpc"
+    }
+  }
+}

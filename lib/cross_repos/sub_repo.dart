@@ -25,6 +25,9 @@ class SubRepo extends SubUserRepo {
     init();
   }
 
+  String? group() =>
+      authUser.attributes[const CognitoUserAttributeKey.custom("group").key];
+
   Future<List<SubUser>> _querySubs() async {
     try {
       final GraphQLRequest<PaginatedResult<SubUser>> request =
@@ -45,7 +48,8 @@ class SubRepo extends SubUserRepo {
           name: user.name,
           gender: user.gender,
           birthYear: user.birthYear,
-          isControl: user.isControl);
+          isControl: user.isControl,
+          group: group());
       final addRequest = ModelMutations.create(newUser);
       final response = await Amplify.API.mutate(request: addRequest).response;
       final SubUser? newSub = response.data;
@@ -78,7 +82,7 @@ class SubRepo extends SubUserRepo {
   @override
   Future<void> updateSubUser(repo.SubUser user) async {
     try {
-      final SubUser newUser = fromLocal(user);
+      final SubUser newUser = fromLocal(user)..copyWith(group: group());
       final updateRequest = ModelMutations.update(newUser);
       final response =
           await Amplify.API.mutate(request: updateRequest).response;

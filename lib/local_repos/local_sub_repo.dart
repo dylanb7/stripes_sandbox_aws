@@ -7,15 +7,16 @@ import 'package:stripes_sandbox_aws/local_repos/local_db.dart';
 import 'package:stripes_sandbox_aws/models/SubUser.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
 
-class SubRepo extends SubUserRepo {
+class LocalSubRepo extends SubUserRepo {
   List<repo.SubUser> subUsers = [];
 
   final StreamController<List<repo.SubUser>> subStream = StreamController();
 
   final LocalDB db = LocalDB();
 
-  SubRepo({required super.authUser}) {
+  LocalSubRepo({required super.authUser}) {
     init() async {
+      await db.ready;
       final List<SubUser> users = await db.getSubUsers();
       subUsers = users.map((user) => toLocal(user)).toList();
       subStream.add(subUsers);

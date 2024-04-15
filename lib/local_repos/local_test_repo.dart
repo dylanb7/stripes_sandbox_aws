@@ -8,6 +8,7 @@ import 'package:stripes_backend_helper/TestingReposImpl/test_question_repo.dart'
 import 'package:stripes_backend_helper/stripes_backend_helper.dart';
 import 'package:stripes_sandbox_aws/cross_repos/stamp_repo.dart';
 import 'package:stripes_sandbox_aws/local_repos/local_db.dart';
+import 'package:stripes_sandbox_aws/local_repos/local_stamp_repo.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponseLog.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
@@ -16,14 +17,14 @@ import 'package:stripes_ui/l10n/app_localizations.dart';
 
 import '../../models/BlueDyeTest.dart';
 
-class BlueTest extends Test<BlueDyeObj> {
+class LocalBlueTest extends Test<BlueDyeObj> {
   BlueDyeTest? current;
 
   final BehaviorSubject<BlueDyeObj> _controller = BehaviorSubject();
 
   final LocalDB db = LocalDB();
 
-  BlueTest({
+  LocalBlueTest({
     required super.stampRepo,
     required super.authUser,
     required super.subUser,
@@ -33,6 +34,7 @@ class BlueTest extends Test<BlueDyeObj> {
   }
 
   Future<void> fetchCurrentTest() async {
+    await db.ready;
     final BlueDyeTest? test = await db.getBlueDyeTest(subUser.uid);
     _emit(test);
   }
@@ -83,7 +85,7 @@ class BlueTest extends Test<BlueDyeObj> {
       subUserId: subUser.uid,
     );
     try {
-      await (stampRepo as Stamps).addRawBlueDye(res);
+      await (stampRepo as LocalStamps).addRawBlueDye(res);
       await cancel();
     } catch (e) {
       safePrint(e);
@@ -92,7 +94,7 @@ class BlueTest extends Test<BlueDyeObj> {
 
   @override
   Widget? displayState(BuildContext context) {
-    return BlueDyeTestScreen<BlueTest>();
+    return BlueDyeTestScreen<LocalBlueTest>();
   }
 
   @override

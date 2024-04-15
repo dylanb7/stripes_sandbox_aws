@@ -27,9 +27,14 @@ class Stamps extends StampRepo<repo.Response> {
   Stamps(
       {required super.authUser,
       required super.currentUser,
-      required super.questionRepo}) {
+      required super.questionRepo,
+      DateTime? earliestFetched}) {
+    earliest = earliestFetched;
     fetchStamps();
   }
+
+  String? group() =>
+      authUser.attributes[const CognitoUserAttributeKey.custom("group").key];
 
   _emit() {
     final List<repo.DetailResponse> localDetails =
@@ -375,7 +380,8 @@ class Stamps extends StampRepo<repo.Response> {
     if (stamp is repo.DetailResponse) {
       try {
         final DetailResponse toCreate =
-            detailToQuery(stamp, fromLocal(currentUser));
+            detailToQuery(stamp, fromLocal(currentUser))
+              ..copyWith(group: group());
         final GraphQLRequest<DetailResponse> request =
             ModelMutations.create(toCreate);
         final GraphQLResponse<DetailResponse> parentResponse =
@@ -398,8 +404,8 @@ class Stamps extends StampRepo<repo.Response> {
       throw UnimplementedError();
     } else if (stamp is repo.Response) {
       try {
-        final GraphQLRequest<Response> request =
-            ModelMutations.create(responseToQuery(stamp, currentUser.uid));
+        final GraphQLRequest<Response> request = ModelMutations.create(
+            responseToQuery(stamp, currentUser.uid)..copyWith(group: group()));
         final GraphQLResponse<Response> response =
             await Amplify.API.mutate(request: request).response;
         Response? res = response.data;
@@ -472,9 +478,12 @@ class Stamps extends StampRepo<repo.Response> {
       throw UnimplementedError();
     }
 
+    final String? groupName = group();
+
     if (stamp is repo.DetailResponse) {
       final DetailResponse toUpdate =
-          detailToQuery(stamp, fromLocal(currentUser));
+          detailToQuery(stamp, fromLocal(currentUser))
+            ..copyWith(group: groupName);
       final GraphQLRequest<DetailResponse> existsRequest = ModelQueries.get(
           DetailResponse.classType,
           DetailResponseModelIdentifier(id: toUpdate.id));
@@ -504,8 +513,8 @@ class Stamps extends StampRepo<repo.Response> {
         }
         final List<Response> created = [];
         for (Response childCreate in toUpdate.responses ?? []) {
-          final Response childToCreate =
-              childCreate.copyWith(detailResponseID: toUpdate.id);
+          final Response childToCreate = childCreate.copyWith(
+              detailResponseID: toUpdate.id, group: groupName);
           final GraphQLRequest<Response> createRequest =
               ModelMutations.create(childToCreate);
           final GraphQLResponse<Response> createResponse =
@@ -525,7 +534,8 @@ class Stamps extends StampRepo<repo.Response> {
         safePrint(e);
       }
     } else if (stamp is repo.Response) {
-      final Response toUpdate = responseToQuery(stamp, currentUser.uid);
+      final Response toUpdate = responseToQuery(stamp, currentUser.uid)
+        ..copyWith(group: groupName);
       final GraphQLRequest<Response> updateRequest =
           ModelMutations.update(toUpdate);
       try {
