@@ -1,5 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:stripes_backend_helper/QuestionModel/question.dart';
+
 import 'package:stripes_backend_helper/QuestionModel/response.dart' as repo;
 import 'package:stripes_backend_helper/RepositoryBase/QuestionBase/question_repo_base.dart';
 import 'package:stripes_backend_helper/RepositoryBase/SubBase/sub_user.dart'
@@ -18,7 +19,8 @@ import 'package:stripes_sandbox_aws/models/Response.dart';
 
 import 'package:stripes_sandbox_aws/models/SubUser.dart';
 
-BlueDyeResp blueDyeFromQuery(BlueDyeResponse blueDye) {
+BlueDyeResp blueDyeFromQuery(
+    BlueDyeResponse blueDye, QuestionRepo questionRepo) {
   final List<BlueDyeResponseLog> logs = blueDye.logs ?? [];
   final BlueDyeResponseLog firstBlue = logs.firstWhere((val) => val.isBlue,
       orElse: () => BlueDyeResponseLog(isBlue: false));
@@ -26,8 +28,18 @@ BlueDyeResp blueDyeFromQuery(BlueDyeResponse blueDye) {
       orElse: () => BlueDyeResponseLog(isBlue: false));
   final int numBlue = logs.where((element) => element.isBlue).toList().length;
   final int numBrown = logs.length - numBlue;
+
+  final List<BMTestLog> bmTestLogs = [];
+  for (BlueDyeResponseLog log in logs) {
+    if (log.response == null) continue;
+    bmTestLogs.add(BMTestLog(
+        id: log.id,
+        response: detailFromQuery(log.response!, questionRepo),
+        isBlue: log.isBlue));
+  }
   return BlueDyeResp(
       id: blueDye.id,
+      group: blueDye.group,
       startEating: blueDye.stamp.getDateTimeInUtc().toLocal(),
       eatingDuration: Duration(milliseconds: blueDye.finishedEating),
       normalBowelMovements: numBrown,
@@ -35,7 +47,10 @@ BlueDyeResp blueDyeFromQuery(BlueDyeResponse blueDye) {
       firstBlue: firstBlue.response?.stamp.getDateTimeInUtc().toLocal() ??
           DateTime.now(),
       lastBlue: lastBlue.response?.stamp.getDateTimeInUtc().toLocal() ??
-          DateTime.now());
+          DateTime.now(),
+      logs: bmTestLogs,
+      amountConsumed: test.parseAmountConsumed(blueDye.amountConsumed) ??
+          test.AmountConsumed.undetermined);
 }
 
 SubUser fromLocal(local.SubUser user) => SubUser(
@@ -47,9 +62,9 @@ SubUser fromLocal(local.SubUser user) => SubUser(
 
 local.SubUser toLocal(SubUser user) => local.SubUser(
     id: user.id,
-    name: user.name,
-    gender: user.gender,
-    birthYear: user.birthYear,
+    name: user.name ?? "",
+    gender: user.gender ?? "",
+    birthYear: user.birthYear ?? 0,
     isControl: user.isControl);
 
 repo.Response responseFromQuery(Response response, QuestionRepo questionRepo) {
@@ -59,6 +74,7 @@ repo.Response responseFromQuery(Response response, QuestionRepo questionRepo) {
   if (response.textResponse != null) {
     return repo.OpenResponse(
       id: response.id,
+      group: response.group,
       question: question as FreeResponse,
       stamp: responseStamp,
       response: response.textResponse!,
@@ -66,23 +82,30 @@ repo.Response responseFromQuery(Response response, QuestionRepo questionRepo) {
   } else if (response.all_selected != null) {
     return repo.AllResponse(
         id: response.id,
+        group: response.group,
         question: question as AllThatApply,
         stamp: responseStamp,
         responses: response.all_selected!);
   } else if (response.selected != null) {
     return repo.MultiResponse(
         id: response.id,
+        group: response.group,
         question: question as MultipleChoice,
         stamp: responseStamp,
         index: response.selected!);
   } else if (response.numeric != null) {
     return repo.NumericResponse(
         id: response.id,
+        group: response.group,
         question: question as Numeric,
         stamp: responseStamp,
         response: response.numeric!);
   }
-  return repo.Selected(question: question as Check, stamp: responseStamp);
+  return repo.Selected(
+      question: question as Check,
+      stamp: responseStamp,
+      group: response.group,
+      id: response.id);
 }
 
 Response responseToQuery(repo.Response response, String subUserId) {
@@ -136,6 +159,7 @@ Response responseToQuery(repo.Response response, String subUserId) {
 DetailResponse detailToQuery(repo.DetailResponse detailResponse, SubUser user) {
   final DetailResponse noChildren = DetailResponse(
     id: detailResponse.id,
+    group: detailResponse.group,
     stamp: TemporalDateTime(
         DateTime.fromMillisecondsSinceEpoch(detailResponse.stamp)),
     type: detailResponse.type,
@@ -162,11 +186,19 @@ repo.DetailResponse detailFromQuery(
       detailType: response.type ?? "");
 }
 
-BlueDyeTest localTestToQuery(test.BlueDyeObj test, local.SubUser subUser) {
+BlueDyeTest localTestToQuery(test.BlueDyeState test, local.SubUser subUser) {
   final BlueDyeTest blueDyeTest = BlueDyeTest(
     id: test.id,
     stamp: TemporalDateTime(test.startTime ?? DateTime.now()),
     finishedEating: test.finishedEating?.inMilliseconds,
+    finishedEatingDate: test.finishedEatingTime != null
+        ? TemporalDateTime(test.finishedEatingTime!)
+        : null,
+    pauseTime:
+        test.pauseTime != null ? TemporalDateTime(test.pauseTime!) : null,
+    startTime:
+        test.timerStart != null ? TemporalDateTime(test.timerStart!) : null,
+    amountConsumed: test.amountConsumed?.toString(),
     subUser: fromLocal(subUser),
   );
   final List<BlueDyeTestLog> testLogs = test.logs.map((log) {
@@ -182,10 +214,10 @@ BlueDyeTest localTestToQuery(test.BlueDyeObj test, local.SubUser subUser) {
   return blueDyeTest.copyWith(logs: testLogs);
 }
 
-test.BlueDyeObj queryToLocalTest(
+test.BlueDyeState queryToLocalTest(
     BlueDyeTest blueDyeTest, QuestionRepo questionRepo) {
   final List<BlueDyeTestLog> logs = blueDyeTest.logs ?? [];
-  List<BMTestLog> bmTestLogs = [];
+  final List<BMTestLog> bmTestLogs = [];
   for (BlueDyeTestLog log in logs) {
     if (log.response == null) continue;
     bmTestLogs.add(BMTestLog(
@@ -194,11 +226,15 @@ test.BlueDyeObj queryToLocalTest(
         isBlue: log.isBlue));
   }
 
-  return test.BlueDyeObj(
+  return test.BlueDyeState(
       id: blueDyeTest.id,
       startTime: blueDyeTest.stamp.getDateTimeInUtc().toLocal(),
       finishedEating: blueDyeTest.finishedEating != null
           ? Duration(milliseconds: blueDyeTest.finishedEating!)
           : null,
+      finishedEatingTime: blueDyeTest.finishedEatingDate?.getDateTimeInUtc(),
+      pauseTime: blueDyeTest.pauseTime?.getDateTimeInUtc(),
+      timerStart: blueDyeTest.startTime?.getDateTimeInUtc(),
+      amountConsumed: test.parseAmountConsumed(blueDyeTest.amountConsumed),
       logs: bmTestLogs);
 }

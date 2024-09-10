@@ -7,27 +7,28 @@ import 'package:rxdart/subjects.dart';
 import 'package:stripes_backend_helper/TestingReposImpl/test_question_repo.dart';
 
 import 'package:stripes_backend_helper/stripes_backend_helper.dart';
+import 'package:stripes_sandbox_aws/combined_repos.dart/combined_stamp_repo.dart';
 import 'package:stripes_sandbox_aws/cross_repos/stamp_repo.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponseLog.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeTestLog.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
-import 'package:stripes_ui/UI/Record/TestScreen/test_screen.dart';
+import 'package:stripes_ui/UI/Record/TestScreen/blue_dye_test_screen.dart';
 import 'package:stripes_ui/l10n/app_localizations.dart';
 
 import '../../models/BlueDyeTest.dart';
 
-class BlueTest extends Test<BlueDyeObj> {
+class BlueTest extends Test<BlueDyeState> {
   BlueDyeTest? current;
 
-  final BehaviorSubject<BlueDyeObj> _controller = BehaviorSubject();
+  final BehaviorSubject<BlueDyeState> _controller = BehaviorSubject();
 
   BlueTest({
     required super.stampRepo,
     required super.authUser,
     required super.subUser,
     required super.questionRepo,
-  }) : super(listensTo: {Symptoms.BM}) {
+  }) : super(listensTo: {Symptoms.BM}, testName: 'Blue Dye Test') {
     fetchCurrentTest();
   }
 
@@ -42,6 +43,10 @@ class BlueTest extends Test<BlueDyeObj> {
           id
           stamp
           finishedEating
+          finishedEatingDate
+          amountConsumed
+          pauseTime
+          startTime
           logs {
             items {
               id
@@ -106,7 +111,7 @@ class BlueTest extends Test<BlueDyeObj> {
     current = test;
     _controller.add(test != null
         ? queryToLocalTest(test, questionRepo)
-        : BlueDyeObj.empty());
+        : BlueDyeState.empty());
   }
 
   @override
@@ -126,16 +131,19 @@ class BlueTest extends Test<BlueDyeObj> {
   }
 
   @override
-  BehaviorSubject<BlueDyeObj> get obj => _controller;
+  BehaviorSubject<BlueDyeState> get state => _controller;
 
   @override
-  setValue(BlueDyeObj obj) async {
-    final BlueDyeTest value = localTestToQuery(obj, subUser);
-    final List<BlueDyeTestLog> logs = value.logs ?? [];
+  Future<void> setTestState(BlueDyeState state) async {
+    final String? groupName = group();
+    final BlueDyeTest value = localTestToQuery(state, subUser)
+      ..copyWith(group: groupName);
+    final List<BlueDyeTestLog> logs =
+        value.logs?.map((log) => log.copyWith(group: groupName)).toList() ?? [];
     final GraphQLRequest<PaginatedResult<BlueDyeTest>> query =
         ModelQueries.list(BlueDyeTest.classType,
             where: BlueDyeTest.SUBUSER.eq(subUser.uid));
-    final String? groupName = group();
+
     try {
       final GraphQLResponse<PaginatedResult<BlueDyeTest>> tests =
           await Amplify.API.query(request: query).response;
@@ -167,7 +175,7 @@ class BlueTest extends Test<BlueDyeObj> {
 
       for (BlueDyeTestLog log in logs) {
         final BlueDyeTestLog toCreate =
-            log.copyWith(blueDyeTest: result.data, group: group());
+            log.copyWith(blueDyeTest: result.data, group: groupName);
         final GraphQLRequest<BlueDyeTestLog> create =
             ModelMutations.create(toCreate);
         final GraphQLResponse<BlueDyeTestLog> createdLog =
@@ -212,7 +220,8 @@ class BlueTest extends Test<BlueDyeObj> {
       subUserId: subUser.uid,
     );
     try {
-      await (stampRepo as Stamps).addRawBlueDye(res);
+      await ((stampRepo as CombinedStampRepo).remote as RemoteStamps)
+          .addRawBlueDye(res);
       await cancel();
     } catch (e) {
       safePrint(e);
@@ -221,7 +230,7 @@ class BlueTest extends Test<BlueDyeObj> {
 
   @override
   Widget? displayState(BuildContext context) {
-    return BlueDyeTestScreen<BlueTest>();
+    return const BlueDyeTestScreen();
   }
 
   @override
@@ -232,19 +241,19 @@ class BlueTest extends Test<BlueDyeObj> {
   @override
   Future<void> onDelete(Response<Question> stamp, String type) async {
     if (stamp is! DetailResponse) return;
-    final BlueDyeObj current = obj.value;
+    final BlueDyeState current = state.value;
     final bool? isBlue = _isBlueFromDetail(stamp);
     if (isBlue == null) return;
     final List<BMTestLog> logs = current.logs;
     logs.removeWhere((element) => element.response == stamp);
     if (logs == current.logs) return;
-    await setValue(current.copyWith(logs: logs));
+    await setTestState(current.copyWith(logs: logs));
   }
 
   @override
   Future<void> onEdit(Response<Question> stamp, String type) async {
     if (stamp is! DetailResponse) return;
-    final BlueDyeObj current = obj.value;
+    final BlueDyeState current = state.value;
     final bool? isBlue = _isBlueFromDetail(stamp);
     if (isBlue == null) return;
     final int index =
@@ -252,7 +261,7 @@ class BlueTest extends Test<BlueDyeObj> {
     if (index < 0) return;
     final List<BMTestLog> newLogs = current.logs;
     newLogs[index] = BMTestLog(response: stamp, isBlue: isBlue);
-    await setValue(current.copyWith(logs: newLogs));
+    await setTestState(current.copyWith(logs: newLogs));
   }
 
   @override
@@ -260,13 +269,14 @@ class BlueTest extends Test<BlueDyeObj> {
     if (stamp is! DetailResponse) return;
     final bool? blue = _isBlueFromDetail(stamp);
     if (blue == null) return;
-    final BlueDyeObj current = obj.value;
-    await setValue(current.copyWith(
+    final BlueDyeState current = state.value;
+    await setTestState(current.copyWith(
         logs: [...current.logs, BMTestLog(response: stamp, isBlue: blue)]));
   }
 
-  TestState get state =>
-      obj.hasValue ? stateFromTestOBJ(obj.value) : TestState.initial;
+  BlueDyeTestStage get testStage => state.hasValue
+      ? stageFromTestState(state.value)
+      : BlueDyeTestStage.initial;
 
   bool? _isBlueFromDetail(DetailResponse res) {
     List<Response> blueRes = res.responses
@@ -279,8 +289,9 @@ class BlueTest extends Test<BlueDyeObj> {
 
   @override
   Widget? pathAdditions(BuildContext context, String type) {
-    final TestState current = state;
-    if (current == TestState.initial || current == TestState.started) {
+    final BlueDyeTestStage current = testStage;
+    if (current == BlueDyeTestStage.initial ||
+        current == BlueDyeTestStage.started) {
       return null;
     }
     return Text(
@@ -294,9 +305,10 @@ class BlueTest extends Test<BlueDyeObj> {
 
   @override
   List<Question> recordAdditions(BuildContext context, String type) {
-    final TestState current = state;
+    final BlueDyeTestStage current = testStage;
     return [
-      if (current == TestState.logs || current == TestState.logsSubmit)
+      if (current == BlueDyeTestStage.logs ||
+          current == BlueDyeTestStage.logsSubmit)
         MultipleChoice(
             id: blueQuestionId,
             isRequired: true,

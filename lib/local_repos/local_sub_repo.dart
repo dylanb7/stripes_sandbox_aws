@@ -6,6 +6,7 @@ import 'package:stripes_backend_helper/stripes_backend_helper.dart' as repo;
 import 'package:stripes_sandbox_aws/local_repos/local_db.dart';
 import 'package:stripes_sandbox_aws/models/SubUser.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
+import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 class LocalSubRepo extends SubUserRepo {
   List<repo.SubUser> subUsers = [];
@@ -29,6 +30,7 @@ class LocalSubRepo extends SubUserRepo {
   Future<void> addSubUser(repo.SubUser user) async {
     try {
       final SubUser newUser = SubUser(
+          id: user.uid,
           name: user.name,
           gender: user.gender,
           birthYear: user.birthYear,

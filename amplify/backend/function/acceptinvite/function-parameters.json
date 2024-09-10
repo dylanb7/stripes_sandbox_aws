@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "api": {
+      "stripessandbox": [
+        "Query",
+        "Mutation"
+      ]
+    },
+    "auth": {
+      "stripessandbox9f7545ba": [
+        "create",
+        "read",
+        "update"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

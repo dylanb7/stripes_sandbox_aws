@@ -17,7 +17,7 @@
 // Generated files can be excluded from analysis in analysis_options.yaml
 // For more info, see: https://dart.dev/guides/language/analysis-options#excluding-code-from-analysis
 
-// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
+// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
@@ -29,6 +29,7 @@ class SubUser extends amplify_core.Model {
   static const classType = const _SubUserModelType();
   final String id;
   final String? _group;
+  final String? _rootEmail;
   final String? _name;
   final String? _gender;
   final int? _birthYear;
@@ -58,43 +59,20 @@ class SubUser extends amplify_core.Model {
     return _group;
   }
   
-  String get name {
-    try {
-      return _name!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  String? get rootEmail {
+    return _rootEmail;
   }
   
-  String get gender {
-    try {
-      return _gender!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  String? get name {
+    return _name;
   }
   
-  int get birthYear {
-    try {
-      return _birthYear!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  String? get gender {
+    return _gender;
+  }
+  
+  int? get birthYear {
+    return _birthYear;
   }
   
   bool get isControl {
@@ -138,12 +116,13 @@ class SubUser extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const SubUser._internal({required this.id, group, required name, required gender, required birthYear, required isControl, blueDyeTestID, blueDyeTest, responses, detailResponses, blueDyeResponses, createdAt, updatedAt}): _group = group, _name = name, _gender = gender, _birthYear = birthYear, _isControl = isControl, _blueDyeTestID = blueDyeTestID, _blueDyeTest = blueDyeTest, _responses = responses, _detailResponses = detailResponses, _blueDyeResponses = blueDyeResponses, _createdAt = createdAt, _updatedAt = updatedAt;
+  const SubUser._internal({required this.id, group, rootEmail, name, gender, birthYear, required isControl, blueDyeTestID, blueDyeTest, responses, detailResponses, blueDyeResponses, createdAt, updatedAt}): _group = group, _rootEmail = rootEmail, _name = name, _gender = gender, _birthYear = birthYear, _isControl = isControl, _blueDyeTestID = blueDyeTestID, _blueDyeTest = blueDyeTest, _responses = responses, _detailResponses = detailResponses, _blueDyeResponses = blueDyeResponses, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory SubUser({String? id, String? group, required String name, required String gender, required int birthYear, required bool isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
+  factory SubUser({String? id, String? group, String? rootEmail, String? name, String? gender, int? birthYear, required bool isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
     return SubUser._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       group: group,
+      rootEmail: rootEmail,
       name: name,
       gender: gender,
       birthYear: birthYear,
@@ -165,6 +144,7 @@ class SubUser extends amplify_core.Model {
     return other is SubUser &&
       id == other.id &&
       _group == other._group &&
+      _rootEmail == other._rootEmail &&
       _name == other._name &&
       _gender == other._gender &&
       _birthYear == other._birthYear &&
@@ -186,6 +166,7 @@ class SubUser extends amplify_core.Model {
     buffer.write("SubUser {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("group=" + "$_group" + ", ");
+    buffer.write("rootEmail=" + "$_rootEmail" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("gender=" + "$_gender" + ", ");
     buffer.write("birthYear=" + (_birthYear != null ? _birthYear!.toString() : "null") + ", ");
@@ -198,10 +179,11 @@ class SubUser extends amplify_core.Model {
     return buffer.toString();
   }
   
-  SubUser copyWith({String? group, String? name, String? gender, int? birthYear, bool? isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
+  SubUser copyWith({String? group, String? rootEmail, String? name, String? gender, int? birthYear, bool? isControl, String? blueDyeTestID, BlueDyeTest? blueDyeTest, List<Response>? responses, List<DetailResponse>? detailResponses, List<BlueDyeResponse>? blueDyeResponses}) {
     return SubUser._internal(
       id: id,
       group: group ?? this.group,
+      rootEmail: rootEmail ?? this.rootEmail,
       name: name ?? this.name,
       gender: gender ?? this.gender,
       birthYear: birthYear ?? this.birthYear,
@@ -215,9 +197,10 @@ class SubUser extends amplify_core.Model {
   
   SubUser copyWithModelFieldValues({
     ModelFieldValue<String?>? group,
-    ModelFieldValue<String>? name,
-    ModelFieldValue<String>? gender,
-    ModelFieldValue<int>? birthYear,
+    ModelFieldValue<String?>? rootEmail,
+    ModelFieldValue<String?>? name,
+    ModelFieldValue<String?>? gender,
+    ModelFieldValue<int?>? birthYear,
     ModelFieldValue<bool>? isControl,
     ModelFieldValue<String?>? blueDyeTestID,
     ModelFieldValue<BlueDyeTest?>? blueDyeTest,
@@ -228,6 +211,7 @@ class SubUser extends amplify_core.Model {
     return SubUser._internal(
       id: id,
       group: group == null ? this.group : group.value,
+      rootEmail: rootEmail == null ? this.rootEmail : rootEmail.value,
       name: name == null ? this.name : name.value,
       gender: gender == null ? this.gender : gender.value,
       birthYear: birthYear == null ? this.birthYear : birthYear.value,
@@ -243,42 +227,67 @@ class SubUser extends amplify_core.Model {
   SubUser.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _group = json['group'],
+      _rootEmail = json['rootEmail'],
       _name = json['name'],
       _gender = json['gender'],
       _birthYear = (json['birthYear'] as num?)?.toInt(),
       _isControl = json['isControl'],
       _blueDyeTestID = json['blueDyeTestID'],
-      _blueDyeTest = json['blueDyeTest']?['serializedData'] != null
-        ? BlueDyeTest.fromJson(new Map<String, dynamic>.from(json['blueDyeTest']['serializedData']))
+      _blueDyeTest = json['blueDyeTest'] != null
+        ? json['blueDyeTest']['serializedData'] != null
+          ? BlueDyeTest.fromJson(new Map<String, dynamic>.from(json['blueDyeTest']['serializedData']))
+          : BlueDyeTest.fromJson(new Map<String, dynamic>.from(json['blueDyeTest']))
         : null,
-      _responses = json['responses'] is List
-        ? (json['responses'] as List)
-          .where((e) => e?['serializedData'] != null)
-          .map((e) => Response.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
-          .toList()
-        : null,
-      _detailResponses = json['detailResponses'] is List
-        ? (json['detailResponses'] as List)
-          .where((e) => e?['serializedData'] != null)
-          .map((e) => DetailResponse.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
-          .toList()
-        : null,
-      _blueDyeResponses = json['blueDyeResponses'] is List
-        ? (json['blueDyeResponses'] as List)
-          .where((e) => e?['serializedData'] != null)
-          .map((e) => BlueDyeResponse.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
-          .toList()
-        : null,
+      _responses = json['responses']  is Map
+        ? (json['responses']['items'] is List
+          ? (json['responses']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => Response.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['responses'] is List
+          ? (json['responses'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => Response.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
+      _detailResponses = json['detailResponses']  is Map
+        ? (json['detailResponses']['items'] is List
+          ? (json['detailResponses']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => DetailResponse.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['detailResponses'] is List
+          ? (json['detailResponses'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => DetailResponse.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
+      _blueDyeResponses = json['blueDyeResponses']  is Map
+        ? (json['blueDyeResponses']['items'] is List
+          ? (json['blueDyeResponses']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => BlueDyeResponse.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['blueDyeResponses'] is List
+          ? (json['blueDyeResponses'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => BlueDyeResponse.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'group': _group, 'name': _name, 'gender': _gender, 'birthYear': _birthYear, 'isControl': _isControl, 'blueDyeTestID': _blueDyeTestID, 'blueDyeTest': _blueDyeTest?.toJson(), 'responses': _responses?.map((Response? e) => e?.toJson()).toList(), 'detailResponses': _detailResponses?.map((DetailResponse? e) => e?.toJson()).toList(), 'blueDyeResponses': _blueDyeResponses?.map((BlueDyeResponse? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'rootEmail': _rootEmail, 'name': _name, 'gender': _gender, 'birthYear': _birthYear, 'isControl': _isControl, 'blueDyeTestID': _blueDyeTestID, 'blueDyeTest': _blueDyeTest?.toJson(), 'responses': _responses?.map((Response? e) => e?.toJson()).toList(), 'detailResponses': _detailResponses?.map((DetailResponse? e) => e?.toJson()).toList(), 'blueDyeResponses': _blueDyeResponses?.map((BlueDyeResponse? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'group': _group,
+    'rootEmail': _rootEmail,
     'name': _name,
     'gender': _gender,
     'birthYear': _birthYear,
@@ -295,6 +304,7 @@ class SubUser extends amplify_core.Model {
   static final amplify_core.QueryModelIdentifier<SubUserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SubUserModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final GROUP = amplify_core.QueryField(fieldName: "group");
+  static final ROOTEMAIL = amplify_core.QueryField(fieldName: "rootEmail");
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final GENDER = amplify_core.QueryField(fieldName: "gender");
   static final BIRTHYEAR = amplify_core.QueryField(fieldName: "birthYear");
@@ -318,6 +328,14 @@ class SubUser extends amplify_core.Model {
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.GROUPS,
+        groupClaim: "cognito:groups",
+        groupsField: "groups",
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
+        operations: const [
+          amplify_core.ModelOperation.READ
+        ]),
+      amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.OWNER,
         ownerField: "owner",
         identityClaim: "cognito:username",
@@ -326,14 +344,6 @@ class SubUser extends amplify_core.Model {
           amplify_core.ModelOperation.CREATE,
           amplify_core.ModelOperation.UPDATE,
           amplify_core.ModelOperation.DELETE,
-          amplify_core.ModelOperation.READ
-        ]),
-      amplify_core.AuthRule(
-        authStrategy: amplify_core.AuthStrategy.GROUPS,
-        groupClaim: "cognito:groups",
-        groupsField: "groups",
-        provider: amplify_core.AuthRuleProvider.USERPOOLS,
-        operations: const [
           amplify_core.ModelOperation.READ
         ])
     ];
@@ -347,20 +357,26 @@ class SubUser extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: SubUser.ROOTEMAIL,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: SubUser.NAME,
-      isRequired: true,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: SubUser.GENDER,
-      isRequired: true,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: SubUser.BIRTHYEAR,
-      isRequired: true,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     

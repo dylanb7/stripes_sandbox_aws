@@ -6,9 +6,9 @@ import 'package:stripes_sandbox_aws/cross_repos/stamp_repo.dart';
 import 'package:stripes_sandbox_aws/local_repos/local_stamp_repo.dart';
 
 class CombinedStampRepo extends StampRepo<repo.Response> {
-  late final Stamps remote;
+  late final StampRepo remote;
 
-  late final LocalStamps local;
+  late final StampRepo local;
 
   List<Response> localStamps = [];
 
@@ -21,24 +21,24 @@ class CombinedStampRepo extends StampRepo<repo.Response> {
       required super.currentUser,
       required super.questionRepo,
       DateTime? earliestFetched}) {
-    remote = Stamps(
+    remote = RemoteStamps(
         authUser: authUser,
         currentUser: currentUser,
         questionRepo: questionRepo,
-        earliestFetched: earliestFetched);
+        earliestFetched: earliestFetched)
+      ..stamps.listen((event) {
+        remoteStamps = event;
+        _emit();
+      });
     local = LocalStamps(
         authUser: authUser,
         currentUser: currentUser,
         questionRepo: questionRepo,
-        earliestFetched: earliestFetched);
-    remote.stamps.listen((event) {
-      remoteStamps = event;
-      _emit();
-    });
-    local.stamps.listen((event) {
-      localStamps = event;
-      _emit();
-    });
+        earliestFetched: earliestFetched)
+      ..stamps.listen((event) {
+        localStamps = event;
+        _emit();
+      });
   }
 
   _emit() {

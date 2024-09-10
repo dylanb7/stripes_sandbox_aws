@@ -17,14 +17,14 @@ import 'package:stripes_sandbox_aws/models/DetailResponse.dart';
 import 'package:stripes_sandbox_aws/models/Response.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
 
-class Stamps extends StampRepo<repo.Response> {
+class RemoteStamps extends StampRepo<repo.Response> {
   List<DetailResponse> details = [];
   List<Response> responses = [];
   List<BlueDyeResponse> blueDyeResponses = [];
 
   final BehaviorSubject<List<repo.Response>> _controller = BehaviorSubject();
 
-  Stamps(
+  RemoteStamps(
       {required super.authUser,
       required super.currentUser,
       required super.questionRepo,
@@ -42,8 +42,11 @@ class Stamps extends StampRepo<repo.Response> {
     final List<repo.Response> localResponses = responses
         .map((response) => responseFromQuery(response, questionRepo))
         .toList();
-    final List<BlueDyeResp> blueDye =
-        blueDyeResponses.map((blue) => blueDyeFromQuery(blue)).toList();
+    final List<BlueDyeResp> blueDye = blueDyeResponses
+        .map(
+          (blue) => blueDyeFromQuery(blue, questionRepo),
+        )
+        .toList();
     final List<repo.Response> newStamps = [
       ...localDetails,
       ...localResponses,
@@ -120,6 +123,8 @@ class Stamps extends StampRepo<repo.Response> {
           id
           stamp
           finishedEating
+          finishedEatingDate
+          amountConsumed
           subUserId
           logs {
             items {
@@ -387,8 +392,8 @@ class Stamps extends StampRepo<repo.Response> {
         final GraphQLResponse<DetailResponse> parentResponse =
             await Amplify.API.mutate(request: request).response;
         for (Response response in toCreate.responses!) {
-          final Response childCreate =
-              response.copyWith(detailResponseID: parentResponse.data?.id);
+          final Response childCreate = response.copyWith(
+              detailResponseID: parentResponse.data?.id, group: group());
           final GraphQLRequest<Response> createChild =
               ModelMutations.create(childCreate);
           await Amplify.API.mutate(request: createChild).response;

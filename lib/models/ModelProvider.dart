@@ -17,7 +17,7 @@
 // Generated files can be excluded from analysis in analysis_options.yaml
 // For more info, see: https://dart.dev/guides/language/analysis-options#excluding-code-from-analysis
 
-// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
+// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'BlueDyeResponse.dart';
@@ -25,6 +25,7 @@ import 'BlueDyeResponseLog.dart';
 import 'BlueDyeTest.dart';
 import 'BlueDyeTestLog.dart';
 import 'DetailResponse.dart';
+import 'GroupInfo.dart';
 import 'Response.dart';
 import 'SubUser.dart';
 
@@ -33,14 +34,15 @@ export 'BlueDyeResponseLog.dart';
 export 'BlueDyeTest.dart';
 export 'BlueDyeTestLog.dart';
 export 'DetailResponse.dart';
+export 'GroupInfo.dart';
 export 'Response.dart';
 export 'SubUser.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "427517661da0fd49d5067ac2e4b3a90c";
+  String version = "cc695c6802c0090f41347a610fbfbff0";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [BlueDyeResponse.schema, BlueDyeResponseLog.schema, BlueDyeTest.schema, BlueDyeTestLog.schema, DetailResponse.schema, Response.schema, SubUser.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [BlueDyeResponse.schema, BlueDyeResponseLog.schema, BlueDyeTest.schema, BlueDyeTestLog.schema, DetailResponse.schema, GroupInfo.schema, Response.schema, SubUser.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -59,6 +61,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return BlueDyeTestLog.classType;
       case "DetailResponse":
         return DetailResponse.classType;
+      case "GroupInfo":
+        return GroupInfo.classType;
       case "Response":
         return Response.classType;
       case "SubUser":

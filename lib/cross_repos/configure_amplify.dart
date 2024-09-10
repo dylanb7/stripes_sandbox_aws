@@ -5,7 +5,8 @@ import 'package:stripes_sandbox_aws/models/ModelProvider.dart';
 
 addAmplifyCrossPugins() async {
   try {
-    final api = AmplifyAPI(modelProvider: ModelProvider.instance);
+    final api = AmplifyAPI(
+        options: APIPluginOptions(modelProvider: ModelProvider.instance));
 
     final auth = AmplifyAuthCognito();
 

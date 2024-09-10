@@ -17,7 +17,7 @@
 // Generated files can be excluded from analysis in analysis_options.yaml
 // For more info, see: https://dart.dev/guides/language/analysis-options#excluding-code-from-analysis
 
-// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
+// ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
@@ -31,6 +31,8 @@ class BlueDyeResponse extends amplify_core.Model {
   final String? _group;
   final amplify_core.TemporalDateTime? _stamp;
   final int? _finishedEating;
+  final amplify_core.TemporalDateTime? _finishedEatingDate;
+  final String? _amountConsumed;
   final List<BlueDyeResponseLog>? _logs;
   final String? _subUserId;
   final amplify_core.TemporalDateTime? _createdAt;
@@ -79,6 +81,14 @@ class BlueDyeResponse extends amplify_core.Model {
     }
   }
   
+  amplify_core.TemporalDateTime? get finishedEatingDate {
+    return _finishedEatingDate;
+  }
+  
+  String? get amountConsumed {
+    return _amountConsumed;
+  }
+  
   List<BlueDyeResponseLog>? get logs {
     return _logs;
   }
@@ -104,14 +114,16 @@ class BlueDyeResponse extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const BlueDyeResponse._internal({required this.id, group, required stamp, required finishedEating, logs, required subUserId, createdAt, updatedAt}): _group = group, _stamp = stamp, _finishedEating = finishedEating, _logs = logs, _subUserId = subUserId, _createdAt = createdAt, _updatedAt = updatedAt;
+  const BlueDyeResponse._internal({required this.id, group, required stamp, required finishedEating, finishedEatingDate, amountConsumed, logs, required subUserId, createdAt, updatedAt}): _group = group, _stamp = stamp, _finishedEating = finishedEating, _finishedEatingDate = finishedEatingDate, _amountConsumed = amountConsumed, _logs = logs, _subUserId = subUserId, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory BlueDyeResponse({String? id, String? group, required amplify_core.TemporalDateTime stamp, required int finishedEating, List<BlueDyeResponseLog>? logs, required String subUserId}) {
+  factory BlueDyeResponse({String? id, String? group, required amplify_core.TemporalDateTime stamp, required int finishedEating, amplify_core.TemporalDateTime? finishedEatingDate, String? amountConsumed, List<BlueDyeResponseLog>? logs, required String subUserId}) {
     return BlueDyeResponse._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       group: group,
       stamp: stamp,
       finishedEating: finishedEating,
+      finishedEatingDate: finishedEatingDate,
+      amountConsumed: amountConsumed,
       logs: logs != null ? List<BlueDyeResponseLog>.unmodifiable(logs) : logs,
       subUserId: subUserId);
   }
@@ -128,6 +140,8 @@ class BlueDyeResponse extends amplify_core.Model {
       _group == other._group &&
       _stamp == other._stamp &&
       _finishedEating == other._finishedEating &&
+      _finishedEatingDate == other._finishedEatingDate &&
+      _amountConsumed == other._amountConsumed &&
       DeepCollectionEquality().equals(_logs, other._logs) &&
       _subUserId == other._subUserId;
   }
@@ -144,6 +158,8 @@ class BlueDyeResponse extends amplify_core.Model {
     buffer.write("group=" + "$_group" + ", ");
     buffer.write("stamp=" + (_stamp != null ? _stamp!.format() : "null") + ", ");
     buffer.write("finishedEating=" + (_finishedEating != null ? _finishedEating!.toString() : "null") + ", ");
+    buffer.write("finishedEatingDate=" + (_finishedEatingDate != null ? _finishedEatingDate!.format() : "null") + ", ");
+    buffer.write("amountConsumed=" + "$_amountConsumed" + ", ");
     buffer.write("subUserId=" + "$_subUserId" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -152,12 +168,14 @@ class BlueDyeResponse extends amplify_core.Model {
     return buffer.toString();
   }
   
-  BlueDyeResponse copyWith({String? group, amplify_core.TemporalDateTime? stamp, int? finishedEating, List<BlueDyeResponseLog>? logs, String? subUserId}) {
+  BlueDyeResponse copyWith({String? group, amplify_core.TemporalDateTime? stamp, int? finishedEating, amplify_core.TemporalDateTime? finishedEatingDate, String? amountConsumed, List<BlueDyeResponseLog>? logs, String? subUserId}) {
     return BlueDyeResponse._internal(
       id: id,
       group: group ?? this.group,
       stamp: stamp ?? this.stamp,
       finishedEating: finishedEating ?? this.finishedEating,
+      finishedEatingDate: finishedEatingDate ?? this.finishedEatingDate,
+      amountConsumed: amountConsumed ?? this.amountConsumed,
       logs: logs ?? this.logs,
       subUserId: subUserId ?? this.subUserId);
   }
@@ -166,6 +184,8 @@ class BlueDyeResponse extends amplify_core.Model {
     ModelFieldValue<String?>? group,
     ModelFieldValue<amplify_core.TemporalDateTime>? stamp,
     ModelFieldValue<int>? finishedEating,
+    ModelFieldValue<amplify_core.TemporalDateTime?>? finishedEatingDate,
+    ModelFieldValue<String?>? amountConsumed,
     ModelFieldValue<List<BlueDyeResponseLog>?>? logs,
     ModelFieldValue<String>? subUserId
   }) {
@@ -174,6 +194,8 @@ class BlueDyeResponse extends amplify_core.Model {
       group: group == null ? this.group : group.value,
       stamp: stamp == null ? this.stamp : stamp.value,
       finishedEating: finishedEating == null ? this.finishedEating : finishedEating.value,
+      finishedEatingDate: finishedEatingDate == null ? this.finishedEatingDate : finishedEatingDate.value,
+      amountConsumed: amountConsumed == null ? this.amountConsumed : amountConsumed.value,
       logs: logs == null ? this.logs : logs.value,
       subUserId: subUserId == null ? this.subUserId : subUserId.value
     );
@@ -184,18 +206,27 @@ class BlueDyeResponse extends amplify_core.Model {
       _group = json['group'],
       _stamp = json['stamp'] != null ? amplify_core.TemporalDateTime.fromString(json['stamp']) : null,
       _finishedEating = (json['finishedEating'] as num?)?.toInt(),
-      _logs = json['logs'] is List
-        ? (json['logs'] as List)
-          .where((e) => e?['serializedData'] != null)
-          .map((e) => BlueDyeResponseLog.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
-          .toList()
-        : null,
+      _finishedEatingDate = json['finishedEatingDate'] != null ? amplify_core.TemporalDateTime.fromString(json['finishedEatingDate']) : null,
+      _amountConsumed = json['amountConsumed'],
+      _logs = json['logs']  is Map
+        ? (json['logs']['items'] is List
+          ? (json['logs']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => BlueDyeResponseLog.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['logs'] is List
+          ? (json['logs'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => BlueDyeResponseLog.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
       _subUserId = json['subUserId'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'group': _group, 'stamp': _stamp?.format(), 'finishedEating': _finishedEating, 'logs': _logs?.map((BlueDyeResponseLog? e) => e?.toJson()).toList(), 'subUserId': _subUserId, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'stamp': _stamp?.format(), 'finishedEating': _finishedEating, 'finishedEatingDate': _finishedEatingDate?.format(), 'amountConsumed': _amountConsumed, 'logs': _logs?.map((BlueDyeResponseLog? e) => e?.toJson()).toList(), 'subUserId': _subUserId, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -203,6 +234,8 @@ class BlueDyeResponse extends amplify_core.Model {
     'group': _group,
     'stamp': _stamp,
     'finishedEating': _finishedEating,
+    'finishedEatingDate': _finishedEatingDate,
+    'amountConsumed': _amountConsumed,
     'logs': _logs,
     'subUserId': _subUserId,
     'createdAt': _createdAt,
@@ -214,6 +247,8 @@ class BlueDyeResponse extends amplify_core.Model {
   static final GROUP = amplify_core.QueryField(fieldName: "group");
   static final STAMP = amplify_core.QueryField(fieldName: "stamp");
   static final FINISHEDEATING = amplify_core.QueryField(fieldName: "finishedEating");
+  static final FINISHEDEATINGDATE = amplify_core.QueryField(fieldName: "finishedEatingDate");
+  static final AMOUNTCONSUMED = amplify_core.QueryField(fieldName: "amountConsumed");
   static final LOGS = amplify_core.QueryField(
     fieldName: "logs",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'BlueDyeResponseLog'));
@@ -266,6 +301,18 @@ class BlueDyeResponse extends amplify_core.Model {
       key: BlueDyeResponse.FINISHEDEATING,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: BlueDyeResponse.FINISHEDEATINGDATE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: BlueDyeResponse.AMOUNTCONSUMED,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(

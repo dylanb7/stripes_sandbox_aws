@@ -1,17 +1,40 @@
+type GroupInfo
+  @model
+  @auth(rules: [{ allow: owner }, { allow: groups, groupsField: "group" }]) {
+  id: ID!
+  group: String @auth(rules: [{ allow: owner, operations: [read, delete] }])
+  owner: String @auth(rules: [{ allow: owner, operations: [read, delete] }])
+  name: String
+  description: String
+}
+
 type SubUser
   @model
   @auth(
     rules: [
-      { allow: owner }
       { allow: groups, groupsField: "group", operations: [read] }
+      { allow: owner }
     ]
   ) {
   id: ID!
+    @auth(
+      rules: [
+        { allow: groups, groupsField: "group", operations: [read] }
+        { allow: owner }
+      ]
+    )
   group: String
-  name: String!
-  gender: String!
-  birthYear: Int!
+  rootEmail: String
+  name: String @auth(rules: [{ allow: owner }])
+  gender: String @auth(rules: [{ allow: owner }])
+  birthYear: Int @auth(rules: [{ allow: owner }])
   isControl: Boolean!
+    @auth(
+      rules: [
+        { allow: owner }
+        { allow: groups, groupsField: "group", operations: [read] }
+      ]
+    )
   blueDyeTestID: ID
   blueDyeTest: BlueDyeTest @hasOne(fields: ["blueDyeTestID"])
   responses: [Response] @hasMany(indexName: "responsesBySub", fields: ["id"])
@@ -70,7 +93,11 @@ type BlueDyeTest
   id: ID!
   group: String
   stamp: AWSDateTime!
+  amountConsumed: String
   finishedEating: Int
+  pauseTime: AWSDateTime
+  startTime: AWSDateTime
+  finishedEatingDate: AWSDateTime
   logs: [BlueDyeTestLog] @hasMany(indexName: "byBlueDyeTest", fields: ["id"])
   subUserId: ID!
   subUser: SubUser! @belongsTo(fields: ["subUserId"])
@@ -88,6 +115,8 @@ type BlueDyeResponse
   group: String
   stamp: AWSDateTime!
   finishedEating: Int!
+  finishedEatingDate: AWSDateTime
+  amountConsumed: String
   logs: [BlueDyeResponseLog]
     @hasMany(indexName: "byBlueResponse", fields: ["id"])
   subUserId: ID! @index(name: "blueResponseBySub", sortKeyFields: ["stamp"])

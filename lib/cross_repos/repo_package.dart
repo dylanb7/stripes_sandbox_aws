@@ -10,10 +10,10 @@ import 'package:stripes_backend_helper/RepositoryBase/SubBase/sub_user.dart';
 import 'package:stripes_backend_helper/RepositoryBase/TestBase/base_test_repo.dart';
 import 'package:stripes_backend_helper/repo_package.dart';
 import 'package:stripes_sandbox_aws/accessed_repo.dart';
-import 'package:stripes_sandbox_aws/cross_repos/questions.dart';
 import 'package:stripes_sandbox_aws/cross_repos/stamp_repo.dart';
 import 'package:stripes_sandbox_aws/cross_repos/sub_repo.dart';
 import 'package:stripes_sandbox_aws/cross_repos/test_repo.dart';
+import 'package:stripes_ui/repos/question_repo.dart';
 
 import 'auth_repo.dart';
 
@@ -38,7 +38,7 @@ class CrossRepoPackage extends StripesRepoPackage {
       {required AuthUser user,
       required SubUser subUser,
       required QuestionRepo questionRepo}) {
-    return Stamps(
+    return RemoteStamps(
         authUser: user, currentUser: subUser, questionRepo: questionRepo);
   }
 

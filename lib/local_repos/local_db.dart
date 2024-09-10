@@ -1,5 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart' as webDb;
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
@@ -63,6 +65,10 @@ const blueDyeTestSchema = {
   id: 'TEXT PRIMARY KEY',
   stamp: 'TEXT',
   finishedEating: 'INTEGER',
+  finishedEatingDate: 'TEXT',
+  pauseTime: 'TEXT',
+  startTime: 'TEXT',
+  amountConsumed: 'TEXT',
   subUserId: 'TEXT'
 };
 
@@ -72,6 +78,8 @@ const blueDyeResponseSchema = {
   id: 'TEXT PRIMARY KEY',
   stamp: 'TEXT',
   finishedEating: 'INTEGER',
+  finishedEatingDate: 'TEXT',
+  amountConsumed: 'TEXT',
   subUserId: 'TEXT'
 };
 
@@ -116,6 +124,10 @@ const blueDyeTestID = 'blueDyeTestID';
 const description = 'description';
 
 const finishedEating = 'finishedEating';
+const finishedEatingDate = 'finishedEatingDate';
+const amountConsumed = 'amountConsumed';
+const pauseTime = 'pauseTime';
+const startTime = 'startTime';
 
 const isBlue = 'isBlue';
 
@@ -139,16 +151,15 @@ class LocalDB {
   factory LocalDB() => _instance;
 
   init() async {
-    final String basePath = await getDatabasesPath();
-    var factoryWithLogs = SqfliteDatabaseFactoryLogger(databaseFactory,
-        options:
-            SqfliteLoggerOptions(type: SqfliteDatabaseFactoryLoggerType.all));
+    if (kIsWeb) {
+      _db = await webDb.databaseFactoryFfiWeb.openDatabase(
+        dbName, /*password: await storage.read(key: accessKey), singleInstance: true*/
+      );
+    } else {
+      final String basePath = await getDatabasesPath();
 
-    _db = await factoryWithLogs.openDatabase(
-      join(basePath,
-          dbName), /*password: await storage.read(key: accessKey), singleInstance: true*/
-    );
-
+      _db = await openDatabase(join(basePath, dbName), singleInstance: true);
+    }
     _initTables();
   }
 
@@ -194,7 +205,7 @@ class LocalDB {
     values[isControl] = boolToInt(subUser.isControl);
     final retId = await _db.update(
         subUserTable, matchKeys(values, subUserSchema.keys),
-        where: '$subUserId = ?', whereArgs: [subUser.id]);
+        where: '$id = ?', whereArgs: [subUser.id]);
     return retId != 0;
   }
 
@@ -346,7 +357,7 @@ class LocalDB {
     final List<BlueDyeResponseLog> logs = blueDyeResponse.logs ?? [];
 
     int count = 0;
-    _db.transaction((txn) async {
+    await _db.transaction((txn) async {
       count += await txn.insert(blueDyeResponseTable,
           matchKeys(blueDyeResponse.toJson(), blueDyeResponseSchema.keys));
       for (final log in logs) {
@@ -362,7 +373,7 @@ class LocalDB {
 
   Future<bool> removeBlueDyeResponse(String blueDyeResponseId) async {
     int count = 0;
-    _db.transaction((txn) async {
+    await _db.transaction((txn) async {
       count += await txn.delete(blueDyeResponseTable,
           where: '$id = ?', whereArgs: [blueDyeResponseId]);
       count += await txn.delete(blueDyeResponseLogTable,
@@ -375,7 +386,7 @@ class LocalDB {
   Future<bool> updateBlueDyeResponse(BlueDyeResponse blueDyeResponse) async {
     final List<BlueDyeResponseLog> logs = blueDyeResponse.logs ?? [];
     int count = 0;
-    _db.transaction((txn) async {
+    await _db.transaction((txn) async {
       count += await txn.update(blueDyeResponseTable,
           matchKeys(blueDyeResponse.toJson(), blueDyeResponseSchema.keys),
           where: '$id = ?', whereArgs: [blueDyeResponse.id]);
@@ -436,27 +447,42 @@ class LocalDB {
     return blueDyeResponses;
   }
 
+  Map<String, dynamic> testBlob(BlueDyeTest test, String subId) {
+    return {...test.toJson(), subUserId: subId};
+  }
+
   Future<bool> setBlueDyeTest(BlueDyeTest? test, String subId) async {
     if (test == null) {
-      return await _db.delete(blueDyeTestTable,
-              where: '$subUserId = ?', whereArgs: [subId]) >
-          0;
+      int count = 0;
+      List<Map<String, Object?>> testsBlob = await _db
+          .query(blueDyeTestTable, where: '$subUserId = ?', whereArgs: [subId]);
+      if (testsBlob.isEmpty) return true;
+      final Object? firstTest = testsBlob[0][id];
+
+      final String testId = firstTest is String ? firstTest : "";
+      await _db.transaction((txn) async {
+        count += await txn.delete(blueDyeTestTable,
+            where: '$subUserId = ?', whereArgs: [subId]);
+        count += await txn.delete(blueDyeTestLogTable,
+            where: '$blueDyeTestID = ?', whereArgs: [testId]);
+      });
+      return count > 0;
     }
     final List<Map<String, Object?>> results = await _db
         .query(blueDyeTestTable, where: '$subUserId = ?', whereArgs: [subId]);
     if (results.isNotEmpty) {
-      if (results[0][id] == test.id) return _updateBlueDyeTest(test);
+      if (results[0][id] == test.id) return _updateBlueDyeTest(test, subId);
       await _db.delete(blueDyeTestTable,
           where: '$subUserId = ?', whereArgs: [subId]);
       return setBlueDyeTest(test, subId);
     }
     int count = 0;
     final List<BlueDyeTestLog> logs = test.logs ?? [];
-    _db.transaction((txn) async {
-      count += await txn.insert(
-          blueDyeTestTable, matchKeys(test.toJson(), blueDyeTestSchema.keys));
+    await _db.transaction((txn) async {
+      count += await txn.insert(blueDyeTestTable,
+          matchKeys(testBlob(test, subId), blueDyeTestSchema.keys));
       for (final log in logs) {
-        final logBlob = log.toJson();
+        final logBlob = log.toJson()..putIfAbsent(blueDyeTestID, () => test.id);
         logBlob[isBlue] = boolToInt(logBlob[isBlue]);
         count += await txn.insert(
             blueDyeTestLogTable, matchKeys(logBlob, blueDyeTestLogSchema.keys));
@@ -465,16 +491,16 @@ class LocalDB {
     return count > 0;
   }
 
-  Future<bool> _updateBlueDyeTest(BlueDyeTest test) async {
+  Future<bool> _updateBlueDyeTest(BlueDyeTest test, String subId) async {
     int count = 0;
     final List<BlueDyeTestLog> logs = test.logs ?? [];
-    _db.transaction((txn) async {
-      count += await txn.update(
-          blueDyeTestTable, matchKeys(test.toJson(), blueDyeTestSchema.keys));
+    await _db.transaction((txn) async {
+      count += await txn.update(blueDyeTestTable,
+          matchKeys(testBlob(test, subId)..remove(id), blueDyeTestSchema.keys));
       await txn.delete(blueDyeTestLogTable,
           where: '$blueDyeTestID = ?', whereArgs: [test.id]);
       for (final log in logs) {
-        final logBlob = log.toJson();
+        final logBlob = log.toJson()..putIfAbsent(blueDyeTestID, () => test.id);
         logBlob[isBlue] = boolToInt(logBlob[isBlue]);
         count += await txn.insert(
             blueDyeTestLogTable, matchKeys(logBlob, blueDyeTestLogSchema.keys));
@@ -483,9 +509,9 @@ class LocalDB {
     return count > 0;
   }
 
-  Future<BlueDyeTest?> getBlueDyeTest(String subId) async {
-    final List<Map<String, Object?>> tests = await _db
-        .query(blueDyeTestTable, where: '$subUserId = ?', whereArgs: [subId]);
+  Future<BlueDyeTest?> getBlueDyeTest(SubUser subUser) async {
+    final List<Map<String, Object?>> tests = await _db.query(blueDyeTestTable,
+        where: '$subUserId = ?', whereArgs: [subUser.id]);
     if (tests.isEmpty) return null;
     final BlueDyeTest test = BlueDyeTest.fromJson(tests[0]);
     final List<Map<String, Object?>> logBlobs = await _db.query(
@@ -514,7 +540,7 @@ class LocalDB {
           response: detailResponse?.copyWith(responses: responses)));
     }
 
-    return test.copyWith(logs: logs);
+    return test.copyWith(logs: logs, subUser: subUser);
   }
 }
 

@@ -23,15 +23,14 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the BlueDyeTestLog type in your schema. */
-class BlueDyeTestLog extends amplify_core.Model {
-  static const classType = const _BlueDyeTestLogModelType();
+/** This is an auto generated class representing the GroupInfo type in your schema. */
+class GroupInfo extends amplify_core.Model {
+  static const classType = const _GroupInfoModelType();
   final String id;
   final String? _group;
-  final bool? _isBlue;
-  final BlueDyeTest? _blueDyeTest;
-  final String? _detailResponseID;
-  final DetailResponse? _response;
+  final String? _owner;
+  final String? _name;
+  final String? _description;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -42,8 +41,8 @@ class BlueDyeTestLog extends amplify_core.Model {
   @override
   String getId() => id;
   
-  BlueDyeTestLogModelIdentifier get modelIdentifier {
-      return BlueDyeTestLogModelIdentifier(
+  GroupInfoModelIdentifier get modelIdentifier {
+      return GroupInfoModelIdentifier(
         id: id
       );
   }
@@ -52,29 +51,16 @@ class BlueDyeTestLog extends amplify_core.Model {
     return _group;
   }
   
-  bool get isBlue {
-    try {
-      return _isBlue!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  String? get owner {
+    return _owner;
   }
   
-  BlueDyeTest? get blueDyeTest {
-    return _blueDyeTest;
+  String? get name {
+    return _name;
   }
   
-  String? get detailResponseID {
-    return _detailResponseID;
-  }
-  
-  DetailResponse? get response {
-    return _response;
+  String? get description {
+    return _description;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -85,16 +71,15 @@ class BlueDyeTestLog extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const BlueDyeTestLog._internal({required this.id, group, required isBlue, blueDyeTest, detailResponseID, response, createdAt, updatedAt}): _group = group, _isBlue = isBlue, _blueDyeTest = blueDyeTest, _detailResponseID = detailResponseID, _response = response, _createdAt = createdAt, _updatedAt = updatedAt;
+  const GroupInfo._internal({required this.id, group, owner, name, description, createdAt, updatedAt}): _group = group, _owner = owner, _name = name, _description = description, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory BlueDyeTestLog({String? id, String? group, required bool isBlue, BlueDyeTest? blueDyeTest, String? detailResponseID, DetailResponse? response}) {
-    return BlueDyeTestLog._internal(
+  factory GroupInfo({String? id, String? group, String? owner, String? name, String? description}) {
+    return GroupInfo._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       group: group,
-      isBlue: isBlue,
-      blueDyeTest: blueDyeTest,
-      detailResponseID: detailResponseID,
-      response: response);
+      owner: owner,
+      name: name,
+      description: description);
   }
   
   bool equals(Object other) {
@@ -104,13 +89,12 @@ class BlueDyeTestLog extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is BlueDyeTestLog &&
+    return other is GroupInfo &&
       id == other.id &&
       _group == other._group &&
-      _isBlue == other._isBlue &&
-      _blueDyeTest == other._blueDyeTest &&
-      _detailResponseID == other._detailResponseID &&
-      _response == other._response;
+      _owner == other._owner &&
+      _name == other._name &&
+      _description == other._description;
   }
   
   @override
@@ -120,12 +104,12 @@ class BlueDyeTestLog extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("BlueDyeTestLog {");
+    buffer.write("GroupInfo {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("group=" + "$_group" + ", ");
-    buffer.write("isBlue=" + (_isBlue != null ? _isBlue!.toString() : "null") + ", ");
-    buffer.write("blueDyeTest=" + (_blueDyeTest != null ? _blueDyeTest!.toString() : "null") + ", ");
-    buffer.write("detailResponseID=" + "$_detailResponseID" + ", ");
+    buffer.write("owner=" + "$_owner" + ", ");
+    buffer.write("name=" + "$_name" + ", ");
+    buffer.write("description=" + "$_description" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -133,80 +117,62 @@ class BlueDyeTestLog extends amplify_core.Model {
     return buffer.toString();
   }
   
-  BlueDyeTestLog copyWith({String? group, bool? isBlue, BlueDyeTest? blueDyeTest, String? detailResponseID, DetailResponse? response}) {
-    return BlueDyeTestLog._internal(
+  GroupInfo copyWith({String? group, String? owner, String? name, String? description}) {
+    return GroupInfo._internal(
       id: id,
       group: group ?? this.group,
-      isBlue: isBlue ?? this.isBlue,
-      blueDyeTest: blueDyeTest ?? this.blueDyeTest,
-      detailResponseID: detailResponseID ?? this.detailResponseID,
-      response: response ?? this.response);
+      owner: owner ?? this.owner,
+      name: name ?? this.name,
+      description: description ?? this.description);
   }
   
-  BlueDyeTestLog copyWithModelFieldValues({
+  GroupInfo copyWithModelFieldValues({
     ModelFieldValue<String?>? group,
-    ModelFieldValue<bool>? isBlue,
-    ModelFieldValue<BlueDyeTest?>? blueDyeTest,
-    ModelFieldValue<String?>? detailResponseID,
-    ModelFieldValue<DetailResponse?>? response
+    ModelFieldValue<String?>? owner,
+    ModelFieldValue<String?>? name,
+    ModelFieldValue<String?>? description
   }) {
-    return BlueDyeTestLog._internal(
+    return GroupInfo._internal(
       id: id,
       group: group == null ? this.group : group.value,
-      isBlue: isBlue == null ? this.isBlue : isBlue.value,
-      blueDyeTest: blueDyeTest == null ? this.blueDyeTest : blueDyeTest.value,
-      detailResponseID: detailResponseID == null ? this.detailResponseID : detailResponseID.value,
-      response: response == null ? this.response : response.value
+      owner: owner == null ? this.owner : owner.value,
+      name: name == null ? this.name : name.value,
+      description: description == null ? this.description : description.value
     );
   }
   
-  BlueDyeTestLog.fromJson(Map<String, dynamic> json)  
+  GroupInfo.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _group = json['group'],
-      _isBlue = json['isBlue'],
-      _blueDyeTest = json['blueDyeTest'] != null
-        ? json['blueDyeTest']['serializedData'] != null
-          ? BlueDyeTest.fromJson(new Map<String, dynamic>.from(json['blueDyeTest']['serializedData']))
-          : BlueDyeTest.fromJson(new Map<String, dynamic>.from(json['blueDyeTest']))
-        : null,
-      _detailResponseID = json['detailResponseID'],
-      _response = json['response'] != null
-        ? json['response']['serializedData'] != null
-          ? DetailResponse.fromJson(new Map<String, dynamic>.from(json['response']['serializedData']))
-          : DetailResponse.fromJson(new Map<String, dynamic>.from(json['response']))
-        : null,
+      _owner = json['owner'],
+      _name = json['name'],
+      _description = json['description'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'group': _group, 'isBlue': _isBlue, 'blueDyeTest': _blueDyeTest?.toJson(), 'detailResponseID': _detailResponseID, 'response': _response?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'group': _group, 'owner': _owner, 'name': _name, 'description': _description, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'group': _group,
-    'isBlue': _isBlue,
-    'blueDyeTest': _blueDyeTest,
-    'detailResponseID': _detailResponseID,
-    'response': _response,
+    'owner': _owner,
+    'name': _name,
+    'description': _description,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<BlueDyeTestLogModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<BlueDyeTestLogModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<GroupInfoModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<GroupInfoModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final GROUP = amplify_core.QueryField(fieldName: "group");
-  static final ISBLUE = amplify_core.QueryField(fieldName: "isBlue");
-  static final BLUEDYETEST = amplify_core.QueryField(
-    fieldName: "blueDyeTest",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'BlueDyeTest'));
-  static final DETAILRESPONSEID = amplify_core.QueryField(fieldName: "detailResponseID");
-  static final RESPONSE = amplify_core.QueryField(
-    fieldName: "response",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'DetailResponse'));
+  static final OWNER = amplify_core.QueryField(fieldName: "owner");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
+  static final DESCRIPTION = amplify_core.QueryField(fieldName: "description");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "BlueDyeTestLog";
-    modelSchemaDefinition.pluralName = "BlueDyeTestLogs";
+    modelSchemaDefinition.name = "GroupInfo";
+    modelSchemaDefinition.pluralName = "GroupInfos";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -226,46 +192,37 @@ class BlueDyeTestLog extends amplify_core.Model {
         groupsField: "groups",
         provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
           amplify_core.ModelOperation.READ
         ])
-    ];
-    
-    modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["blueDyeTestID"], name: "byBlueDyeTest")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: BlueDyeTestLog.GROUP,
+      key: GroupInfo.GROUP,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: BlueDyeTestLog.ISBLUE,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: BlueDyeTestLog.BLUEDYETEST,
-      isRequired: false,
-      targetNames: ['blueDyeTestID'],
-      ofModelName: 'BlueDyeTest'
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: BlueDyeTestLog.DETAILRESPONSEID,
+      key: GroupInfo.OWNER,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
-      key: BlueDyeTestLog.RESPONSE,
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: GroupInfo.NAME,
       isRequired: false,
-      ofModelName: 'DetailResponse',
-      associatedKey: DetailResponse.ID
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: GroupInfo.DESCRIPTION,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -284,29 +241,29 @@ class BlueDyeTestLog extends amplify_core.Model {
   });
 }
 
-class _BlueDyeTestLogModelType extends amplify_core.ModelType<BlueDyeTestLog> {
-  const _BlueDyeTestLogModelType();
+class _GroupInfoModelType extends amplify_core.ModelType<GroupInfo> {
+  const _GroupInfoModelType();
   
   @override
-  BlueDyeTestLog fromJson(Map<String, dynamic> jsonData) {
-    return BlueDyeTestLog.fromJson(jsonData);
+  GroupInfo fromJson(Map<String, dynamic> jsonData) {
+    return GroupInfo.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'BlueDyeTestLog';
+    return 'GroupInfo';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [BlueDyeTestLog] in your schema.
+ * of [GroupInfo] in your schema.
  */
-class BlueDyeTestLogModelIdentifier implements amplify_core.ModelIdentifier<BlueDyeTestLog> {
+class GroupInfoModelIdentifier implements amplify_core.ModelIdentifier<GroupInfo> {
   final String id;
 
-  /** Create an instance of BlueDyeTestLogModelIdentifier using [id] the primary key. */
-  const BlueDyeTestLogModelIdentifier({
+  /** Create an instance of GroupInfoModelIdentifier using [id] the primary key. */
+  const GroupInfoModelIdentifier({
     required this.id});
   
   @override
@@ -324,7 +281,7 @@ class BlueDyeTestLogModelIdentifier implements amplify_core.ModelIdentifier<Blue
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'BlueDyeTestLogModelIdentifier(id: $id)';
+  String toString() => 'GroupInfoModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -332,7 +289,7 @@ class BlueDyeTestLogModelIdentifier implements amplify_core.ModelIdentifier<Blue
       return true;
     }
     
-    return other is BlueDyeTestLogModelIdentifier &&
+    return other is GroupInfoModelIdentifier &&
       id == other.id;
   }
   

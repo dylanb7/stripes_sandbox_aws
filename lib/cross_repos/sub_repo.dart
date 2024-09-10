@@ -45,6 +45,7 @@ class SubRepo extends SubUserRepo {
   Future<void> addSubUser(repo.SubUser user) async {
     try {
       final SubUser newUser = SubUser(
+          id: user.uid,
           name: user.name,
           gender: user.gender,
           birthYear: user.birthYear,
@@ -54,7 +55,7 @@ class SubRepo extends SubUserRepo {
       final response = await Amplify.API.mutate(request: addRequest).response;
       final SubUser? newSub = response.data;
       if (newSub != null) {
-        subUsers.add(toLocal(newSub));
+        subUsers.add(toLocal(newUser));
         subStream.add(subUsers);
       }
     } catch (e) {

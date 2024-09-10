@@ -36,8 +36,9 @@ class LocalStamps extends StampRepo<repo.Response> {
     final List<repo.Response> localResponses = responses
         .map((response) => responseFromQuery(response, questionRepo))
         .toList();
-    final List<BlueDyeResp> blueDye =
-        blueDyeResponses.map((blue) => blueDyeFromQuery(blue)).toList();
+    final List<BlueDyeResp> blueDye = blueDyeResponses
+        .map((blue) => blueDyeFromQuery(blue, questionRepo))
+        .toList();
     final List<repo.Response> newStamps = [
       ...localDetails,
       ...localResponses,
