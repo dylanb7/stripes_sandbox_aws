@@ -385,6 +385,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
 
   @override
   addStamp(Stamp stamp) async {
+    print(group());
     if (stamp is repo.DetailResponse) {
       try {
         final DetailResponse toCreate =

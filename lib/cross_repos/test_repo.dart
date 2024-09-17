@@ -202,6 +202,8 @@ class BlueTest extends Test<BlueDyeState> {
   submit(DateTime submitTime) async {
     if (current == null ||
         current?.logs == null ||
+        current?.amountConsumed == null ||
+        current?.finishedEatingDate == null ||
         current?.finishedEating == null) return;
     final int lastBlue =
         current!.logs!.lastIndexWhere((element) => element.isBlue);
@@ -212,6 +214,8 @@ class BlueTest extends Test<BlueDyeState> {
     final BlueDyeResponse res = BlueDyeResponse(
       stamp: current!.stamp,
       finishedEating: current!.finishedEating!,
+      amountConsumed: current!.amountConsumed!,
+      finishedEatingDate: current!.finishedEatingDate,
       logs: current!.logs!
           .map((log) => BlueDyeResponseLog(
               isBlue: log.isBlue,
