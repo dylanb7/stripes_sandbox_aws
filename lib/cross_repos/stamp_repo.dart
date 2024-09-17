@@ -78,6 +78,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
         items {
           id
           stamp
+          group
           type
           qid
           textResponse
@@ -96,6 +97,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
         items {
           id
           stamp
+          group
           type
           description
           subUserId
@@ -122,6 +124,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
         items {
           id
           stamp
+          group
           finishedEating
           finishedEatingDate
           amountConsumed
@@ -386,7 +389,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
       try {
         final DetailResponse toCreate =
             detailToQuery(stamp, fromLocal(currentUser))
-              ..copyWith(group: group());
+                .copyWith(group: group());
         final GraphQLRequest<DetailResponse> request =
             ModelMutations.create(toCreate);
         final GraphQLResponse<DetailResponse> parentResponse =
@@ -488,7 +491,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
     if (stamp is repo.DetailResponse) {
       final DetailResponse toUpdate =
           detailToQuery(stamp, fromLocal(currentUser))
-            ..copyWith(group: groupName);
+              .copyWith(group: groupName);
       final GraphQLRequest<DetailResponse> existsRequest = ModelQueries.get(
           DetailResponse.classType,
           DetailResponseModelIdentifier(id: toUpdate.id));
@@ -539,8 +542,8 @@ class RemoteStamps extends StampRepo<repo.Response> {
         safePrint(e);
       }
     } else if (stamp is repo.Response) {
-      final Response toUpdate = responseToQuery(stamp, currentUser.uid)
-        ..copyWith(group: groupName);
+      final Response toUpdate =
+          responseToQuery(stamp, currentUser.uid).copyWith(group: groupName);
       final GraphQLRequest<Response> updateRequest =
           ModelMutations.update(toUpdate);
       try {

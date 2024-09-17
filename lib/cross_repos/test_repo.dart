@@ -42,6 +42,7 @@ class BlueTest extends Test<BlueDyeState> {
         items {
           id
           stamp
+          group
           finishedEating
           finishedEatingDate
           amountConsumed
@@ -50,10 +51,12 @@ class BlueTest extends Test<BlueDyeState> {
           logs {
             items {
               id
+              group
               isBlue
               response {
                 id
                 stamp
+                group
                 type
                 description
                 responses {
@@ -136,8 +139,8 @@ class BlueTest extends Test<BlueDyeState> {
   @override
   Future<void> setTestState(BlueDyeState state) async {
     final String? groupName = group();
-    final BlueDyeTest value = localTestToQuery(state, subUser)
-      ..copyWith(group: groupName);
+    final BlueDyeTest value =
+        localTestToQuery(state, subUser).copyWith(group: groupName);
     final List<BlueDyeTestLog> logs =
         value.logs?.map((log) => log.copyWith(group: groupName)).toList() ?? [];
     final GraphQLRequest<PaginatedResult<BlueDyeTest>> query =
@@ -158,7 +161,7 @@ class BlueTest extends Test<BlueDyeState> {
         }
       } else {
         final GraphQLRequest<BlueDyeTest> create =
-            ModelMutations.create(value..copyWith(group: groupName));
+            ModelMutations.create(value.copyWith(group: groupName));
         result = await Amplify.API.mutate(request: create).response;
         if (result.data == null) {
           safePrint(result.errors);

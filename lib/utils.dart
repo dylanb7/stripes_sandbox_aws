@@ -177,6 +177,7 @@ repo.DetailResponse detailFromQuery(
     DetailResponse response, QuestionRepo questionRepo) {
   return repo.DetailResponse(
       id: response.id,
+      group: response.group,
       description: response.description ?? "",
       responses: response.responses
               ?.map((val) => responseFromQuery(val, questionRepo))

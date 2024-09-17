@@ -8,6 +8,7 @@ import 'package:stripes_sandbox_aws/combined_repos.dart/repos_package.dart';
 import 'package:stripes_sandbox_aws/cross_repos/sub_repo.dart';
 import 'package:stripes_sandbox_aws/local_repos/local_sub_repo.dart';
 import 'package:stripes_ui/Providers/auth_provider.dart';
+import 'package:stripes_ui/Providers/sub_provider.dart';
 import 'package:stripes_ui/Util/easy_snack.dart';
 
 Widget? getStage(base.AuthUser user) {
@@ -87,6 +88,7 @@ class InvitedIndicatorState extends ConsumerState<InvitedIndicator> {
       await remote.addSubUser(user);
     }
     ref.invalidate(authProvider);
+    ref.invalidate(subProvider);
     setState(() {
       updating = false;
     });

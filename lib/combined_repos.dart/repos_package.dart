@@ -71,14 +71,7 @@ class CombinedRepos extends StripesRepoPackage {
             questionRepo: questionRepo)
       ]);
     }
-    return TestsRepo(tests: [
-      LocalBlueTest(
-        stampRepo: stampRepo,
-        authUser: user,
-        subUser: subUser,
-        questionRepo: questionRepo,
-      )
-    ]);
+    return TestsRepo(tests: []);
   }
 }
 
