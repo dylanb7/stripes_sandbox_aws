@@ -1072,7 +1072,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "297cef6f95a73498c975e801042941c600f85cd8"
+      resolved-ref: "7909a0384c1797ae61af1b00f816a515f283fffc"
       url: "https://github.com/dylanb7/stripes_ui"
     source: git
     version: "1.0.2"

@@ -82,10 +82,13 @@ class InvitedIndicatorState extends ConsumerState<InvitedIndicator> {
     final List<SubUser> localUsers =
         await LocalSubRepo(authUser: widget.user).users.first;
 
+    print(localUsers);
+
     final SubRepo remote = SubRepo(authUser: widget.user);
 
     for (SubUser user in localUsers) {
       await remote.addSubUser(user);
+      print("created $user");
     }
     ref.invalidate(authProvider);
     ref.invalidate(subProvider);

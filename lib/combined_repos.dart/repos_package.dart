@@ -39,7 +39,6 @@ class CombinedRepos extends StripesRepoPackage {
       {required AuthUser user,
       required SubUser subUser,
       required QuestionRepo<QuestionHome> questionRepo}) {
-    print(user);
     if (hasRemote(user)) {
       return CombinedStampRepo(
           authUser: user, currentUser: subUser, questionRepo: questionRepo);
