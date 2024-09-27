@@ -23,16 +23,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const config.StripesConfig local = config.StripesConfig(
+    /*const config.StripesConfig local = config.StripesConfig(
         hasGraphing: true,
         hasLogging: false,
         export: fileShare,
         exportType: [config.ExportType.perPage],
-        authStrategy: config.AuthStrategy.accessCode);
+        authStrategy: config.AuthStrategy.accessCode);*/
 
     final config.StripesConfig stripesConfig = config.StripesConfig(
         hasGraphing: true,
-        hasLogging: true,
+        hasLogging: false,
         export: fileShare,
         exportType: const [config.ExportType.perPage],
         authStrategy: config.AuthStrategy.accessCodeEmail,
