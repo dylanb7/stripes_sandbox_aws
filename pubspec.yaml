@@ -22,10 +22,9 @@ dependencies:
   amplify_api: ^2.4.1
   amplify_auth_cognito: ^2.4.1
   amplify_authenticator: ^2.1.3
-  url_strategy: ^0.2.0
+  url_strategy: ^0.3.0
   sqflite_common_ffi_web: ^0.4.2+3
-  sqflite: ^2.3.3
-  sqflite_sqlcipher: ^2.2.1
+  sqflite: ^2.3.3+1
   flutter_secure_storage: ^9.1.1
   rxdart: ^0.27.7
   flutter_riverpod: ^2.5.1
@@ -33,8 +32,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.13.1
-  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+  flutter_lints: ^5.0.0
 
 flutter_launcher_icons:
   android: true
@@ -46,7 +45,7 @@ flutter_launcher_icons:
   background_color_android: "#ffffff"
   web:
     generate: true
-    image_path: "libassets/StripesIcon1024.png"
+    image_path: "lib/assets/StripesIcon1024.png"
     background_color: "#ffffff"
     theme_color: "#ffffff"
 

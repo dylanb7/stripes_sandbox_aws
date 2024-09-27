@@ -2,7 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart' as webDb;
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponseLog.dart';
@@ -15,8 +15,6 @@ import 'dart:core';
 
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
-// ignore: depend_on_referenced_packages
-import 'package:sqflite_common/sqflite_logger.dart';
 
 import 'package:stripes_sandbox_aws/models/SubUser.dart';
 
