@@ -46,7 +46,12 @@ class MyApp extends StatelessWidget {
       authenticatorBuilder: (context, state) {
         switch (state.currentStep) {
           case AuthenticatorStep.loading:
-            return LoadingWidget();
+            return SizedBox.expand(
+              child: ColoredBox(
+                color: Theme.of(context).canvasColor,
+                child: LoadingWidget(),
+              ),
+            );
           case AuthenticatorStep.signUp:
             return CustomSignUp(state: state);
           case AuthenticatorStep.signIn:
