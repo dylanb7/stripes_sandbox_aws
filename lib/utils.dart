@@ -10,6 +10,9 @@ import 'package:stripes_backend_helper/RepositoryBase/TestBase/BlueDye/blue_dye_
 
 import 'package:stripes_backend_helper/RepositoryBase/TestBase/BlueDye/blue_dye_response.dart';
 import 'package:stripes_backend_helper/RepositoryBase/TestBase/BlueDye/bm_test_log.dart';
+import 'package:stripes_backend_helper/date_format.dart';
+import 'package:stripes_sandbox_aws/local_repos/local_db.dart';
+
 import 'package:stripes_sandbox_aws/models/BlueDyeResponse.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeResponseLog.dart';
 import 'package:stripes_sandbox_aws/models/BlueDyeTest.dart';
@@ -19,9 +22,36 @@ import 'package:stripes_sandbox_aws/models/Response.dart';
 
 import 'package:stripes_sandbox_aws/models/SubUser.dart';
 
+BlueDyeResponse blueDyeToQuery(
+    BlueDyeResp blueDye, local.SubUser sub, QuestionRepo repo) {
+  final List<BlueDyeResponseLog> logs = blueDye.logs.map((log) {
+    return BlueDyeResponseLog(
+        id: log.id,
+        group: log.group,
+        isBlue: log.isBlue,
+        detailResponseID: log.response.id);
+  }).toList();
+
+  return BlueDyeResponse(
+      id: blueDye.id,
+      group: blueDye.group,
+      stamp: TemporalDateTime(dateFromStamp(blueDye.stamp)),
+      finishedEating: blueDye.eatingDuration.inMilliseconds,
+      subUserId: sub.uid,
+      finishedEatingDate: blueDye.finishedEatingTime != null
+          ? TemporalDateTime(blueDye.finishedEatingTime!)
+          : null,
+      amountConsumed: blueDye.amountConsumed.toString(),
+      logs: logs);
+}
+
 BlueDyeResp blueDyeFromQuery(
     BlueDyeResponse blueDye, QuestionRepo questionRepo) {
   final List<BlueDyeResponseLog> logs = blueDye.logs ?? [];
+  logs.sort((first, second) =>
+      first.response?.stamp
+          .compareTo(second.response?.stamp ?? TemporalDateTime(DateTime(0))) ??
+      -1);
   final BlueDyeResponseLog firstBlue = logs.firstWhere((val) => val.isBlue,
       orElse: () => BlueDyeResponseLog(isBlue: false));
   final BlueDyeResponseLog lastBlue = logs.lastWhere((val) => val.isBlue,
@@ -42,6 +72,8 @@ BlueDyeResp blueDyeFromQuery(
       group: blueDye.group,
       startEating: blueDye.stamp.getDateTimeInUtc().toLocal(),
       eatingDuration: Duration(milliseconds: blueDye.finishedEating),
+      finishedEatingTime:
+          blueDye.finishedEatingDate?.getDateTimeInUtc().toLocal(),
       normalBowelMovements: numBrown,
       blueBowelMovements: numBlue,
       firstBlue: firstBlue.response?.stamp.getDateTimeInUtc().toLocal() ??
@@ -219,6 +251,7 @@ test.BlueDyeState queryToLocalTest(
     BlueDyeTest blueDyeTest, QuestionRepo questionRepo) {
   final List<BlueDyeTestLog> logs = blueDyeTest.logs ?? [];
   final List<BMTestLog> bmTestLogs = [];
+
   for (BlueDyeTestLog log in logs) {
     if (log.response == null) continue;
     bmTestLogs.add(BMTestLog(
@@ -226,6 +259,8 @@ test.BlueDyeState queryToLocalTest(
         response: detailFromQuery(log.response!, questionRepo),
         isBlue: log.isBlue));
   }
+
+  bmTestLogs.sort((first, second) => first.stamp.compareTo(second.stamp));
 
   return test.BlueDyeState(
       id: blueDyeTest.id,

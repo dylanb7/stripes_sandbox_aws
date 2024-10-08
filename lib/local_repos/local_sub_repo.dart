@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:stripes_backend_helper/RepositoryBase/SubBase/base_sub_repo.dart';
 import 'package:stripes_backend_helper/stripes_backend_helper.dart' as repo;
 import 'package:stripes_sandbox_aws/local_repos/local_db.dart';
@@ -11,7 +12,7 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class LocalSubRepo extends SubUserRepo {
   List<repo.SubUser> subUsers = [];
 
-  final StreamController<List<repo.SubUser>> subStream = StreamController();
+  final StreamController<List<repo.SubUser>> subStream = BehaviorSubject();
 
   final LocalDB db = LocalDB();
 

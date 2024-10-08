@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:stripes_backend_helper/RepositoryBase/AuthBase/auth_user.dart'
     as user_type;
 import 'package:stripes_backend_helper/RepositoryBase/AuthBase/base_auth_repo.dart';
 
 class Auth extends AuthRepo {
-  final StreamController<user_type.AuthUser> userStream = StreamController();
+  final StreamController<user_type.AuthUser> userStream = BehaviorSubject();
 
   late final List<AuthUserAttribute> attributes;
 

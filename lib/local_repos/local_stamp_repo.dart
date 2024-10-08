@@ -83,7 +83,12 @@ class LocalStamps extends StampRepo<repo.Response> {
         _emit();
       }
     } else if (stamp is BlueDyeResp) {
-      throw UnimplementedError();
+      final BlueDyeResponse res =
+          blueDyeToQuery(stamp, currentUser, questionRepo);
+      final bool created = await db.addBlueDyeResponse(res);
+      if (created) {
+        blueDyeResponses.add(res);
+      }
     } else if (stamp is repo.Response) {
       final Response toCreate = responseToQuery(stamp, currentUser.uid);
       final bool created = await db.addResponse(toCreate);

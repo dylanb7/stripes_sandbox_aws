@@ -21,6 +21,8 @@ import '../../models/BlueDyeTest.dart';
 class BlueTest extends Test<BlueDyeState> {
   BlueDyeTest? current;
 
+  bool submitting = false;
+
   final BehaviorSubject<BlueDyeState> _controller = BehaviorSubject();
 
   BlueTest({
@@ -141,8 +143,13 @@ class BlueTest extends Test<BlueDyeState> {
     final String? groupName = group();
     final BlueDyeTest value =
         localTestToQuery(state, subUser).copyWith(group: groupName);
+
     final List<BlueDyeTestLog> logs =
         value.logs?.map((log) => log.copyWith(group: groupName)).toList() ?? [];
+    logs.sort((first, second) =>
+        (second.createdAt ?? TemporalDateTime(DateTime.now()))
+            .compareTo(first.createdAt ?? TemporalDateTime(DateTime(0))));
+
     final GraphQLRequest<PaginatedResult<BlueDyeTest>> query =
         ModelQueries.list(BlueDyeTest.classType,
             where: BlueDyeTest.SUBUSER.eq(subUser.uid));
@@ -200,6 +207,8 @@ class BlueTest extends Test<BlueDyeState> {
 
   @override
   submit(DateTime submitTime) async {
+    if (submitting) return;
+    submitting = true;
     if (current == null ||
         current?.logs == null ||
         current?.amountConsumed == null ||
@@ -208,7 +217,10 @@ class BlueTest extends Test<BlueDyeState> {
     final int lastBlue =
         current!.logs!.lastIndexWhere((element) => element.isBlue);
 
-    if (lastBlue == -1) return;
+    if (lastBlue == -1) {
+      submitting = false;
+      return;
+    }
 
     final String? groupName = group();
     final BlueDyeResponse res = BlueDyeResponse(
@@ -233,6 +245,7 @@ class BlueTest extends Test<BlueDyeState> {
     } catch (e) {
       safePrint(e);
     }
+    submitting = false;
   }
 
   @override

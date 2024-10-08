@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:rxdart/subjects.dart';
 
 import 'package:stripes_backend_helper/RepositoryBase/SubBase/base_sub_repo.dart';
 import 'package:stripes_backend_helper/RepositoryBase/SubBase/sub_user.dart'
     as repo;
+import 'package:stripes_sandbox_aws/local_repos/local_sub_repo.dart';
 import 'package:stripes_sandbox_aws/models/SubUser.dart';
 
 import 'package:stripes_sandbox_aws/utils.dart';
@@ -13,9 +15,12 @@ import 'package:stripes_sandbox_aws/utils.dart';
 class SubRepo extends SubUserRepo {
   List<repo.SubUser> subUsers = [];
 
-  final StreamController<List<repo.SubUser>> subStream = StreamController();
+  final StreamController<List<repo.SubUser>> subStream = BehaviorSubject();
+
+  late final LocalSubRepo localSubRepo;
 
   SubRepo({required super.authUser}) {
+    localSubRepo = LocalSubRepo(authUser: authUser);
     init() async {
       final List<SubUser> users = await _querySubs();
       subUsers = users.map((user) => toLocal(user)).toList();
@@ -58,6 +63,7 @@ class SubRepo extends SubUserRepo {
         subUsers.add(toLocal(newUser));
         subStream.add(subUsers);
       }
+      localSubRepo.addSubUser(user);
     } catch (e) {
       safePrint(e);
     }
@@ -75,6 +81,7 @@ class SubRepo extends SubUserRepo {
         subUsers.removeWhere((subUser) => subUser.uid == removedSub.id);
         subStream.add(subUsers);
       }
+      localSubRepo.deleteSubUser(user);
     } catch (e) {
       safePrint(e);
     }
@@ -96,6 +103,7 @@ class SubRepo extends SubUserRepo {
           subStream.add(subUsers);
         }
       }
+      localSubRepo.updateSubUser(user);
     } catch (e) {
       safePrint(e);
     }
