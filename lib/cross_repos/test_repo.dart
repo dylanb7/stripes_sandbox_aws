@@ -292,6 +292,9 @@ class BlueTest extends Test<BlueDyeState> {
     final BlueDyeState current = state.value;
     await setTestState(current.copyWith(
         logs: [...current.logs, BMTestLog(response: stamp, isBlue: blue)]));
+    if (stageFromTestState(state.value) == BlueDyeTestStage.logsSubmit) {
+      await submit(dateFromStamp(stamp.stamp));
+    }
   }
 
   BlueDyeTestStage get testStage => state.hasValue

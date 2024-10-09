@@ -24,30 +24,35 @@ import 'package:stripes_sandbox_aws/models/SubUser.dart';
 
 BlueDyeResponse blueDyeToQuery(
     BlueDyeResp blueDye, local.SubUser sub, QuestionRepo repo) {
+  final BlueDyeResponse toAdd = BlueDyeResponse(
+    id: blueDye.id,
+    group: blueDye.group,
+    stamp: TemporalDateTime(dateFromStamp(blueDye.stamp)),
+    finishedEating: blueDye.eatingDuration.inMilliseconds,
+    subUserId: sub.uid,
+    finishedEatingDate: blueDye.finishedEatingTime != null
+        ? TemporalDateTime(blueDye.finishedEatingTime!)
+        : null,
+    amountConsumed: blueDye.amountConsumed.toString(),
+  );
+
   final List<BlueDyeResponseLog> logs = blueDye.logs.map((log) {
     return BlueDyeResponseLog(
         id: log.id,
         group: log.group,
         isBlue: log.isBlue,
-        detailResponseID: log.response.id);
+        response: detailToQuery(log.response, fromLocal(sub)),
+        detailResponseID: log.response.id,
+        blueDyeResponse: toAdd);
   }).toList();
 
-  return BlueDyeResponse(
-      id: blueDye.id,
-      group: blueDye.group,
-      stamp: TemporalDateTime(dateFromStamp(blueDye.stamp)),
-      finishedEating: blueDye.eatingDuration.inMilliseconds,
-      subUserId: sub.uid,
-      finishedEatingDate: blueDye.finishedEatingTime != null
-          ? TemporalDateTime(blueDye.finishedEatingTime!)
-          : null,
-      amountConsumed: blueDye.amountConsumed.toString(),
-      logs: logs);
+  return toAdd.copyWith(logs: logs);
 }
 
 BlueDyeResp blueDyeFromQuery(
     BlueDyeResponse blueDye, QuestionRepo questionRepo) {
-  final List<BlueDyeResponseLog> logs = blueDye.logs ?? [];
+  List<BlueDyeResponseLog> logs = blueDye.logs ?? [];
+
   logs.sort((first, second) =>
       first.response?.stamp
           .compareTo(second.response?.stamp ?? TemporalDateTime(DateTime(0))) ??
@@ -147,6 +152,7 @@ Response responseToQuery(repo.Response response, String subUserId) {
   if (response is repo.OpenResponse) {
     return Response(
         stamp: awsDate,
+        group: response.group,
         type: response.type,
         qid: response.question.id,
         textResponse: response.response,
@@ -156,6 +162,7 @@ Response responseToQuery(repo.Response response, String subUserId) {
   if (response is repo.AllResponse) {
     return Response(
         id: response.id,
+        group: response.group,
         stamp: awsDate,
         type: response.type,
         qid: response.question.id,
@@ -165,6 +172,7 @@ Response responseToQuery(repo.Response response, String subUserId) {
   if (response is repo.NumericResponse) {
     return Response(
         id: response.id,
+        group: response.group,
         stamp: awsDate,
         type: response.type,
         qid: response.question.id,
@@ -174,6 +182,7 @@ Response responseToQuery(repo.Response response, String subUserId) {
   if (response is repo.MultiResponse) {
     return Response(
         id: response.id,
+        group: response.group,
         stamp: awsDate,
         type: response.type,
         qid: response.question.id,
@@ -182,6 +191,7 @@ Response responseToQuery(repo.Response response, String subUserId) {
   }
   return Response(
       id: response.id,
+      group: response.group,
       stamp: awsDate,
       type: response.type,
       qid: response.question.id,

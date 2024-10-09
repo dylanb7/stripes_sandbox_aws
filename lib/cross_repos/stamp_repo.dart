@@ -264,6 +264,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
     try {
       final GraphQLResponse response =
           await Amplify.API.query(request: stampsRequest).response;
+      print(response);
       if (response.data == null) return;
       final jsonData =
           (json.decode(response.data) as Map).cast<String, Object?>();

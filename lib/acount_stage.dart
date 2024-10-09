@@ -135,7 +135,14 @@ class ExpiredAccountState extends ConsumerState<ExpiredAccount> {
       bottom: 16.0,
       left: 6.0,
       right: 6.0,
-      child: Card(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+            border:
+                Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+            borderRadius: BorderRadius.all(
+              Radius.circular(12.0),
+            ),
+            color: Theme.of(context).cardColor),
         child: Padding(
           padding: EdgeInsets.all(12.0),
           child: Column(
