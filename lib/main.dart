@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
     final config.StripesConfig stripesConfig = config.StripesConfig(
         hasGraphing: true,
         hasLogging: false,
+        profileType: config.ProfileType.username,
         export: fileShare,
         exportType: const [config.ExportType.perPage],
         authStrategy: config.AuthStrategy.accessCodeEmail,
