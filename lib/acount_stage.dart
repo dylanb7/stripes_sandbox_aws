@@ -220,6 +220,7 @@ class ExpiredAccountState extends ConsumerState<ExpiredAccount> {
       }
       return false;
     }
+    ref.invalidate(authProvider);
     setState(() {
       updating = false;
     });

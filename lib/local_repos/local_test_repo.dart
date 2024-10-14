@@ -56,7 +56,6 @@ class LocalBlueTest extends Test<BlueDyeState> {
 
   @override
   setTestState(BlueDyeState state) async {
-    print(state);
     final BlueDyeTest value = localTestToQuery(state, subUser);
     final bool added = await db.setBlueDyeTest(value, subUser.uid);
     if (added) _emit(value);

@@ -90,16 +90,16 @@ class SubRepo extends SubUserRepo {
   @override
   Future<void> updateSubUser(repo.SubUser user) async {
     try {
-      final SubUser newUser = fromLocal(user)..copyWith(group: group());
+      final SubUser newUser = fromLocal(user).copyWith(group: group());
       final updateRequest = ModelMutations.update(newUser);
       final response =
           await Amplify.API.mutate(request: updateRequest).response;
       final SubUser? updatedSub = response.data;
       if (updatedSub != null) {
         final int index =
-            subUsers.indexWhere((subUser) => subUser.uid == updatedSub.id);
+            subUsers.indexWhere((subUser) => subUser.uid == user.uid);
         if (index >= 0) {
-          subUsers[index] = toLocal(updatedSub);
+          subUsers[index] = user;
           subStream.add(subUsers);
         }
       }

@@ -51,12 +51,14 @@ BlueDyeResponse blueDyeToQuery(
 
 BlueDyeResp blueDyeFromQuery(
     BlueDyeResponse blueDye, QuestionRepo questionRepo) {
-  List<BlueDyeResponseLog> logs = blueDye.logs ?? [];
+  final List<BlueDyeResponseLog> logs =
+      blueDye.logs != null ? List.from(blueDye.logs!) : [];
 
   logs.sort((first, second) =>
       first.response?.stamp
           .compareTo(second.response?.stamp ?? TemporalDateTime(DateTime(0))) ??
       -1);
+
   final BlueDyeResponseLog firstBlue = logs.firstWhere((val) => val.isBlue,
       orElse: () => BlueDyeResponseLog(isBlue: false));
   final BlueDyeResponseLog lastBlue = logs.lastWhere((val) => val.isBlue,
@@ -64,7 +66,7 @@ BlueDyeResp blueDyeFromQuery(
   final int numBlue = logs.where((element) => element.isBlue).toList().length;
   final int numBrown = logs.length - numBlue;
 
-  final List<BMTestLog> bmTestLogs = [];
+  List<BMTestLog> bmTestLogs = [];
   for (BlueDyeResponseLog log in logs) {
     if (log.response == null) continue;
     bmTestLogs.add(BMTestLog(
@@ -72,6 +74,7 @@ BlueDyeResp blueDyeFromQuery(
         response: detailFromQuery(log.response!, questionRepo),
         isBlue: log.isBlue));
   }
+
   return BlueDyeResp(
       id: blueDye.id,
       group: blueDye.group,

@@ -17,6 +17,10 @@ import 'package:stripes_sandbox_aws/models/DetailResponse.dart';
 import 'package:stripes_sandbox_aws/models/Response.dart';
 import 'package:stripes_sandbox_aws/utils.dart';
 
+const fetchResponses = "responsesBySubUserIdAndStamp";
+const fetchDetails = "detailResponsesBySubUserIdAndStamp";
+const fetchBlueResponses = "blueDyeResponsesBySubUserIdAndStamp";
+
 class RemoteStamps extends StampRepo<repo.Response> {
   List<DetailResponse> details = [];
   List<Response> responses = [];
@@ -42,11 +46,13 @@ class RemoteStamps extends StampRepo<repo.Response> {
     final List<repo.Response> localResponses = responses
         .map((response) => responseFromQuery(response, questionRepo))
         .toList();
+
     final List<BlueDyeResp> blueDye = blueDyeResponses
         .map(
           (blue) => blueDyeFromQuery(blue, questionRepo),
         )
         .toList();
+
     final List<repo.Response> newStamps = [
       ...localDetails,
       ...localResponses,
@@ -56,21 +62,16 @@ class RemoteStamps extends StampRepo<repo.Response> {
     _controller.add(newStamps);
   }
 
-  fetchStamps({bool includePrevious = false}) async {
+  fetchStamps({int limit = 30, bool includePrevious = false}) async {
     final TemporalDateTime earliestTime = earliest != null
         ? TemporalDateTime(earliest!)
         : TemporalDateTime(DateTime(0));
 
-    const fetchResponses = "listResponses";
-    const fetchDetails = "listDetailResponses";
-    const fetchBlueResponses = "listBlueDyeResponses";
-
-    const gqlDocument = '''query FetchStamps(\$subId: ID!) {
-      $fetchResponses(
+    const responseTemplate = '''$fetchResponses(
+        nextToken: \$nextToken,
+        limit: \$limit,
+        subUserId: \$subId,
         filter: { 
-          subUserId: { 
-            eq: \$subId 
-          }, 
           detailResponseID: {
             attributeExists: false
           },
@@ -86,14 +87,15 @@ class RemoteStamps extends StampRepo<repo.Response> {
           numeric
           all_selected
         }
+        nextToken
       }
+    ''';
+
+    const detailTemplate = '''
       $fetchDetails(
-        filter: { 
-          subUserId: { 
-            eq: \$subId 
-          },
-          
-        }) {
+        nextToken: \$nextToken,
+        limit: \$limit,
+        subUserId: \$subId) {
         items {
           id
           stamp
@@ -114,13 +116,14 @@ class RemoteStamps extends StampRepo<repo.Response> {
             }
           } 
         }
-      }
+        nextToken
+      }''';
+
+    const blueTemplate = '''
       $fetchBlueResponses(
-        filter: { 
-          subUserId: { 
-            eq: \$subId 
-          }, 
-        }) {
+        nextToken: \$nextToken,
+        limit: \$limit,
+        subUserId: \$subId) {
         items {
           id
           stamp
@@ -155,7 +158,13 @@ class RemoteStamps extends StampRepo<repo.Response> {
             }
           }
         }
-      }
+      }''';
+
+    final gqlDocument =
+        '''query FetchStamps(\$subId: ID!, \$limit: Int, \$nextToken: String) {
+      $responseTemplate
+      $detailTemplate
+      $blueTemplate
     }''';
 
     final int? earliestResponseTime =
@@ -170,33 +179,11 @@ class RemoteStamps extends StampRepo<repo.Response> {
       document: gqlDocument,
       variables: {
         "subId": currentUser.uid,
+        "limit": 30,
         "earliest": earliestTime.format(),
         "previousEarliest": previous?.format()
       },
     );
-
-/*
-    ModelQueries.get(
-        SubUser.classType, SubUserModelIdentifier(id: currentUser.uid));
-
-    final GraphQLRequest<PaginatedResult<DetailResponse>> detailQuery =
-        ModelQueries.list(DetailResponse.classType,
-            where: DetailResponse.STAMP
-                .ge(earlist)
-                .and(DetailResponse.SUBUSERID.eq(currentUser.uid)));
-
-    final GraphQLRequest<PaginatedResult<Response>> responseQuery =
-        ModelQueries.list(Response.classType,
-            where: Response.STAMP.ge(earlist).and(Response.DETAILRESPONSE
-                .eq(null)
-                .and(Response.SUBUSERID.eq(currentUser.uid))));
-
-    final GraphQLRequest<PaginatedResult<BlueDyeResponse>> blueQuery =
-        ModelQueries.list(BlueDyeResponse.classType,
-            where: BlueDyeResponse.STAMP
-                .ge(earlist)
-                .and(BlueDyeResponse.SUBUSERID.eq(currentUser.uid)));
-                */
 
     List<DetailResponse> parseDetail(Map<String, dynamic> detailResponsesBlob) {
       if (!detailResponsesBlob.containsKey("items")) return [];
@@ -231,7 +218,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
             final Map<String, dynamic> logMap =
                 (log as Map).cast<String, dynamic>();
             BlueDyeResponseLog resToAdd = BlueDyeResponseLog.fromJson(logMap);
-            if (logMap.containsKey("response")) {
+            if (logMap.containsKey("response") && logMap["response"] is Map) {
               final Map<String, dynamic> detailMap =
                   (logMap["response"] as Map).cast<String, dynamic>();
               final List<Response> responsesToAdd = [];
@@ -261,100 +248,156 @@ class RemoteStamps extends StampRepo<repo.Response> {
       return ret;
     }
 
+    final List<Response> allNewResponses = [];
+    final List<DetailResponse> allNewDetails = [];
+    final List<BlueDyeResponse> allNewBlueDye = [];
+
+    const token = "nextToken";
+
+    String? nextResponseToken;
+    String? nextDetailToken;
+    String? nextBlueToken;
+
+    void parseNewRequest(
+      Map<String, dynamic>? responses,
+      Map<String, dynamic>? detailResponses,
+      Map<String, dynamic>? blueResponses,
+    ) {
+      if (responses != null) {
+        nextResponseToken = responses[token];
+        final PaginatedResult<Response> rawResponses =
+            const PaginatedModelType(Response.classType).fromJson(responses);
+        allNewResponses
+            .addAll(rawResponses.items.whereType<Response>().toList());
+      }
+      if (detailResponses != null) {
+        nextDetailToken = detailResponses[token];
+        allNewDetails.addAll(parseDetail(detailResponses));
+      }
+      if (blueResponses != null) {
+        nextBlueToken = blueResponses[token];
+        allNewBlueDye.addAll(parseBlue(blueResponses));
+      }
+    }
+
     try {
       final GraphQLResponse response =
           await Amplify.API.query(request: stampsRequest).response;
-      print(response);
+
       if (response.data == null) return;
+
       final jsonData =
           (json.decode(response.data) as Map).cast<String, Object?>();
 
-      final responsesBlob =
-          (jsonData[fetchResponses] as Map).cast<String, dynamic>();
-      final PaginatedResult<Response> rawResponses =
-          const PaginatedModelType(Response.classType).fromJson(responsesBlob);
+      parseNewRequest(
+          (jsonData[fetchResponses] as Map).cast<String, dynamic>(),
+          (jsonData[fetchDetails] as Map).cast<String, dynamic>(),
+          (jsonData[fetchBlueResponses] as Map).cast<String, dynamic>());
 
-      final detailResponsesBlob =
-          (jsonData[fetchDetails] as Map).cast<String, dynamic>();
+      const int maxRetrys = 25;
 
-      final List<DetailResponse> newDetails = parseDetail(detailResponsesBlob);
+      int retrys = 0;
 
-      final blueResponsesBlob =
-          (jsonData[fetchBlueResponses] as Map).cast<String, dynamic>();
-
-      final List<BlueDyeResponse> newBlueDye = parseBlue(blueResponsesBlob);
-
-      final List<Response> newResponses =
-          rawResponses.items.whereType<Response>().toList();
+      while (retrys <= maxRetrys &&
+          (nextBlueToken ?? nextDetailToken ?? nextResponseToken) != null) {
+        retrys++;
+        Map<String, dynamic>? blue, res, det;
+        if (nextBlueToken != null) {
+          final gqlBlueDocument =
+              '''query FetchBlue(\$subId: ID!, \$limit: Int, \$nextToken: String) {
+            $blueTemplate
+          }''';
+          GraphQLRequest gqlBlueRequest = GraphQLRequest(
+            document: gqlBlueDocument,
+            variables: {
+              "subId": currentUser.uid,
+              "limit": 30,
+              "nextToken": nextBlueToken,
+              "earliest": earliestTime.format(),
+              "previousEarliest": previous?.format()
+            },
+          );
+          final GraphQLResponse response =
+              await Amplify.API.query(request: gqlBlueRequest).response;
+          if (response.data != null) {
+            blue = ((json.decode(response.data) as Map)
+                    .cast<String, Object?>()[fetchBlueResponses] as Map)
+                .cast<String, dynamic>();
+          }
+        }
+        if (nextDetailToken != null) {
+          final DetailResponse earliestDetail = allNewDetails.reduce(
+              (value, combine) =>
+                  value.stamp.compareTo(combine.stamp) > 0 ? combine : value);
+          if (earliestDetail.stamp.compareTo(earliestTime) > 0) {
+            final gqlDetailDocument =
+                '''query FetchDetail(\$subId: ID!, \$limit: Int, \$nextToken: String) {
+            $detailTemplate
+          }''';
+            GraphQLRequest gqlDetailRequest = GraphQLRequest(
+              document: gqlDetailDocument,
+              variables: {
+                "subId": currentUser.uid,
+                "limit": 30,
+                "nextToken": nextBlueToken,
+                "earliest": earliestTime.format(),
+                "previousEarliest": previous?.format()
+              },
+            );
+            final GraphQLResponse response =
+                await Amplify.API.query(request: gqlDetailRequest).response;
+            if (response.data != null) {
+              det = ((json.decode(response.data) as Map)
+                      .cast<String, Object?>()[fetchDetails] as Map)
+                  .cast<String, dynamic>();
+            }
+          } else {
+            nextDetailToken = null;
+          }
+        }
+        if (nextResponseToken != null) {
+          final earliestResponse = allNewResponses.reduce((value, combine) =>
+              value.stamp.compareTo(combine.stamp) > 0 ? combine : value);
+          if (earliestResponse.stamp.compareTo(earliestTime) > 0) {
+            final gqlResponseDocument =
+                '''query FetchResponse(\$subId: ID!, \$limit: Int, \$nextToken: String) {
+            $responseTemplate
+          }''';
+            GraphQLRequest gqlResponseRequest = GraphQLRequest(
+              document: gqlResponseDocument,
+              variables: {
+                "subId": currentUser.uid,
+                "limit": 30,
+                "nextToken": nextBlueToken,
+                "earliest": earliestTime.format(),
+                "previousEarliest": previous?.format()
+              },
+            );
+            final GraphQLResponse response =
+                await Amplify.API.query(request: gqlResponseRequest).response;
+            if (response.data != null) {
+              det = ((json.decode(response.data) as Map)
+                      .cast<String, Object?>()[fetchResponses] as Map)
+                  .cast<String, dynamic>();
+            }
+          } else {
+            nextResponseToken = null;
+          }
+        }
+        parseNewRequest(res, det, blue);
+      }
 
       if (includePrevious) {
-        responses = [...responses, ...newResponses];
-        details = [...details, ...newDetails];
-        blueDyeResponses = [...blueDyeResponses, ...newBlueDye];
+        responses = [...responses, ...allNewResponses];
+        details = [...details, ...allNewDetails];
+        blueDyeResponses = [...blueDyeResponses, ...allNewBlueDye];
       } else {
-        responses = newResponses;
-        details = newDetails;
-        blueDyeResponses = newBlueDye;
+        responses = allNewResponses;
+        details = allNewDetails;
+        blueDyeResponses = allNewBlueDye;
       }
 
       _emit();
-
-      /*final GraphQLResponse<PaginatedResult<DetailResponse>> detailResult =
-          await Amplify.API.query(request: detailQuery).response;
-
-      if (detailResult.data != null) {
-        final List<DetailResponse?> cleaned = [];
-        for (DetailResponse? response in detailResult.data!.items) {
-          cleaned.add(await ensureDetailChildren(response));
-        }
-        details = cleaned.whereType<DetailResponse>().toList();
-      }
-
-      final GraphQLResponse<PaginatedResult<Response>> responseResult =
-          await Amplify.API.query(request: responseQuery).response;
-      if (responseResult.data != null) {
-        final List<Response?> rawResponses = responseResult.data!.items;
-        responses = rawResponses.whereType<Response>().toList();
-      }
-
-      final GraphQLResponse<PaginatedResult<BlueDyeResponse>> blueDyeResult =
-          await Amplify.API.query(request: blueQuery).response;
-      if (blueDyeResult.data != null) {
-        final List<BlueDyeResponse> rawData =
-            blueDyeResult.data!.items.whereType<BlueDyeResponse>().toList();
-        final List<BlueDyeResponse> cleaned = [];
-        for (BlueDyeResponse blueDyeResponse in rawData) {
-          List<BlueDyeResponseLog>? logs = blueDyeResponse.logs;
-          if (logs == null) {
-            final GraphQLRequest<PaginatedResult<BlueDyeResponseLog>> blueLogs =
-                ModelQueries.list(BlueDyeResponseLog.classType,
-                    where: BlueDyeResponseLog.BLUEDYERESPONSE
-                        .eq(blueDyeResponse.id));
-            GraphQLResponse<PaginatedResult<BlueDyeResponseLog>> res =
-                await Amplify.API.query(request: blueLogs).response;
-            if (res.data == null) continue;
-            logs = res.data!.items.whereType<BlueDyeResponseLog>().toList();
-          }
-
-          final List<BlueDyeResponseLog> withDetail = [];
-          for (BlueDyeResponseLog log in logs) {
-            final DetailResponse? logResponse =
-                await ensureDetailChildren(log.response);
-            if (logResponse != null) {
-              final BlueDyeResponseLog toAdd = log.copyWith(
-                  response: logResponse, detailResponseID: logResponse.id);
-              withDetail.add(toAdd);
-            }
-          }
-
-          final BlueDyeResponse toAdd =
-              blueDyeResponse.copyWith(logs: withDetail);
-          cleaned.add(toAdd);
-        }
-
-        blueDyeResponses = cleaned;
-      }
-      _emit();*/
     } catch (e) {
       safePrint(e);
     }
@@ -370,6 +413,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
     try {
       final GraphQLResponse<BlueDyeResponse> parentReponse =
           await Amplify.API.mutate(request: createParentRequest).response;
+
       if (parentReponse.hasErrors) return;
       for (BlueDyeResponseLog log in responseLogs) {
         final BlueDyeResponseLog toCreate =
@@ -386,7 +430,6 @@ class RemoteStamps extends StampRepo<repo.Response> {
 
   @override
   addStamp(Stamp stamp) async {
-    print(group());
     if (stamp is repo.DetailResponse) {
       try {
         final DetailResponse toCreate =

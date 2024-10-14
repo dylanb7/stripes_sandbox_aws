@@ -865,10 +865,10 @@ packages:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: "6ababf341050edff57da8b6990f11f4e99eaba837865e2e6defe16d039619db5"
+      sha256: c57c0bbfec7142e3a0f55633be504b796af72e60e3c791b44d5a017b985f7a48
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "5.0.1"
   shared_preferences:
     dependency: transitive
     description:
@@ -1072,7 +1072,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: f1e193ded3a89a242c4dc7ddcab21958caac4fba
+      resolved-ref: b39ab9b108cd62756d46d91eafd51ab0a14aa0df
       url: "https://github.com/dylanb7/stripes_ui"
     source: git
     version: "1.0.2"
