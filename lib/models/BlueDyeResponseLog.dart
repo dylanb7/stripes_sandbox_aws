@@ -22,7 +22,6 @@
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
-
 /** This is an auto generated class representing the BlueDyeResponseLog type in your schema. */
 class BlueDyeResponseLog extends amplify_core.Model {
   static const classType = const _BlueDyeResponseLogModelType();
@@ -37,261 +36,318 @@ class BlueDyeResponseLog extends amplify_core.Model {
 
   @override
   getInstanceType() => classType;
-  
-  @Deprecated('[getId] is being deprecated in favor of custom primary key feature. Use getter [modelIdentifier] to get model identifier.')
+
+  @Deprecated(
+      '[getId] is being deprecated in favor of custom primary key feature. Use getter [modelIdentifier] to get model identifier.')
   @override
   String getId() => id;
-  
+
   BlueDyeResponseLogModelIdentifier get modelIdentifier {
-      return BlueDyeResponseLogModelIdentifier(
-        id: id
-      );
+    return BlueDyeResponseLogModelIdentifier(id: id);
   }
-  
+
   String? get group {
     return _group;
   }
-  
+
   bool get isBlue {
     try {
       return _isBlue!;
-    } catch(e) {
+    } catch (e) {
       throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
+          amplify_core.AmplifyExceptionMessages
+              .codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion: amplify_core.AmplifyExceptionMessages
+              .codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString());
     }
   }
-  
+
   BlueDyeResponse? get blueDyeResponse {
     return _blueDyeResponse;
   }
-  
+
   String? get detailResponseID {
     return _detailResponseID;
   }
-  
+
   DetailResponse? get response {
     return _response;
   }
-  
+
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
-  
+
   amplify_core.TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
-  
-  const BlueDyeResponseLog._internal({required this.id, group, required isBlue, blueDyeResponse, detailResponseID, response, createdAt, updatedAt}): _group = group, _isBlue = isBlue, _blueDyeResponse = blueDyeResponse, _detailResponseID = detailResponseID, _response = response, _createdAt = createdAt, _updatedAt = updatedAt;
-  
-  factory BlueDyeResponseLog({String? id, String? group, required bool isBlue, BlueDyeResponse? blueDyeResponse, String? detailResponseID, DetailResponse? response}) {
+
+  const BlueDyeResponseLog._internal(
+      {required this.id,
+      group,
+      required isBlue,
+      blueDyeResponse,
+      detailResponseID,
+      response,
+      createdAt,
+      updatedAt})
+      : _group = group,
+        _isBlue = isBlue,
+        _blueDyeResponse = blueDyeResponse,
+        _detailResponseID = detailResponseID,
+        _response = response,
+        _createdAt = createdAt,
+        _updatedAt = updatedAt;
+
+  factory BlueDyeResponseLog(
+      {String? id,
+      String? group,
+      required bool isBlue,
+      BlueDyeResponse? blueDyeResponse,
+      String? detailResponseID,
+      DetailResponse? response}) {
     return BlueDyeResponseLog._internal(
-      id: id == null ? amplify_core.UUID.getUUID() : id,
-      group: group,
-      isBlue: isBlue,
-      blueDyeResponse: blueDyeResponse,
-      detailResponseID: detailResponseID,
-      response: response);
+        id: id == null ? amplify_core.UUID.getUUID() : id,
+        group: group,
+        isBlue: isBlue,
+        blueDyeResponse: blueDyeResponse,
+        detailResponseID: detailResponseID,
+        response: response);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is BlueDyeResponseLog &&
-      id == other.id &&
-      _group == other._group &&
-      _isBlue == other._isBlue &&
-      _blueDyeResponse == other._blueDyeResponse &&
-      _detailResponseID == other._detailResponseID &&
-      _response == other._response;
+        id == other.id &&
+        _group == other._group &&
+        _isBlue == other._isBlue &&
+        _blueDyeResponse == other._blueDyeResponse &&
+        _detailResponseID == other._detailResponseID &&
+        _response == other._response;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write("BlueDyeResponseLog {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("group=" + "$_group" + ", ");
-    buffer.write("isBlue=" + (_isBlue != null ? _isBlue!.toString() : "null") + ", ");
-    buffer.write("blueDyeResponse=" + (_blueDyeResponse != null ? _blueDyeResponse!.toString() : "null") + ", ");
+    buffer.write(
+        "isBlue=" + (_isBlue != null ? _isBlue!.toString() : "null") + ", ");
+    buffer.write("blueDyeResponse=" +
+        (_blueDyeResponse != null ? _blueDyeResponse!.toString() : "null") +
+        ", ");
     buffer.write("detailResponseID=" + "$_detailResponseID" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("createdAt=" +
+        (_createdAt != null ? _createdAt!.format() : "null") +
+        ", ");
+    buffer.write(
+        "updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
-    
+
     return buffer.toString();
   }
-  
-  BlueDyeResponseLog copyWith({String? group, bool? isBlue, BlueDyeResponse? blueDyeResponse, String? detailResponseID, DetailResponse? response}) {
-    return BlueDyeResponseLog._internal(
-      id: id,
-      group: group ?? this.group,
-      isBlue: isBlue ?? this.isBlue,
-      blueDyeResponse: blueDyeResponse ?? this.blueDyeResponse,
-      detailResponseID: detailResponseID ?? this.detailResponseID,
-      response: response ?? this.response);
-  }
-  
-  BlueDyeResponseLog copyWithModelFieldValues({
-    ModelFieldValue<String?>? group,
-    ModelFieldValue<bool>? isBlue,
-    ModelFieldValue<BlueDyeResponse?>? blueDyeResponse,
-    ModelFieldValue<String?>? detailResponseID,
-    ModelFieldValue<DetailResponse?>? response
-  }) {
-    return BlueDyeResponseLog._internal(
-      id: id,
-      group: group == null ? this.group : group.value,
-      isBlue: isBlue == null ? this.isBlue : isBlue.value,
-      blueDyeResponse: blueDyeResponse == null ? this.blueDyeResponse : blueDyeResponse.value,
-      detailResponseID: detailResponseID == null ? this.detailResponseID : detailResponseID.value,
-      response: response == null ? this.response : response.value
-    );
-  }
-  
-  BlueDyeResponseLog.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      _group = json['group'],
-      _isBlue = json['isBlue'],
-      _blueDyeResponse = json['blueDyeResponse'] != null
-        ? json['blueDyeResponse']['serializedData'] != null
-          ? BlueDyeResponse.fromJson(new Map<String, dynamic>.from(json['blueDyeResponse']['serializedData']))
-          : BlueDyeResponse.fromJson(new Map<String, dynamic>.from(json['blueDyeResponse']))
-        : null,
-      _detailResponseID = json['detailResponseID'],
-      _response = json['response'] != null
-        ? json['response']['serializedData'] != null
-          ? DetailResponse.fromJson(new Map<String, dynamic>.from(json['response']['serializedData']))
-          : DetailResponse.fromJson(new Map<String, dynamic>.from(json['response']))
-        : null,
-      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
-  
-  Map<String, dynamic> toJson() => {
-    'id': id, 'group': _group, 'isBlue': _isBlue, 'blueDyeResponse': _blueDyeResponse?.toJson(), 'detailResponseID': _detailResponseID, 'response': _response?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
-  };
-  
-  Map<String, Object?> toMap() => {
-    'id': id,
-    'group': _group,
-    'isBlue': _isBlue,
-    'blueDyeResponse': _blueDyeResponse,
-    'detailResponseID': _detailResponseID,
-    'response': _response,
-    'createdAt': _createdAt,
-    'updatedAt': _updatedAt
-  };
 
-  static final amplify_core.QueryModelIdentifier<BlueDyeResponseLogModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<BlueDyeResponseLogModelIdentifier>();
+  BlueDyeResponseLog copyWith(
+      {String? group,
+      bool? isBlue,
+      BlueDyeResponse? blueDyeResponse,
+      String? detailResponseID,
+      DetailResponse? response}) {
+    return BlueDyeResponseLog._internal(
+        id: id,
+        group: group ?? this.group,
+        isBlue: isBlue ?? this.isBlue,
+        blueDyeResponse: blueDyeResponse ?? this.blueDyeResponse,
+        detailResponseID: detailResponseID ?? this.detailResponseID,
+        response: response ?? this.response);
+  }
+
+  BlueDyeResponseLog copyWithModelFieldValues(
+      {ModelFieldValue<String?>? group,
+      ModelFieldValue<bool>? isBlue,
+      ModelFieldValue<BlueDyeResponse?>? blueDyeResponse,
+      ModelFieldValue<String?>? detailResponseID,
+      ModelFieldValue<DetailResponse?>? response}) {
+    return BlueDyeResponseLog._internal(
+        id: id,
+        group: group == null ? this.group : group.value,
+        isBlue: isBlue == null ? this.isBlue : isBlue.value,
+        blueDyeResponse: blueDyeResponse == null
+            ? this.blueDyeResponse
+            : blueDyeResponse.value,
+        detailResponseID: detailResponseID == null
+            ? this.detailResponseID
+            : detailResponseID.value,
+        response: response == null ? this.response : response.value);
+  }
+
+  BlueDyeResponseLog.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        _group = json['group'],
+        _isBlue = json['isBlue'],
+        _blueDyeResponse = json['blueDyeResponse'] != null
+            ? json['blueDyeResponse']['serializedData'] != null
+                ? BlueDyeResponse.fromJson(new Map<String, dynamic>.from(
+                    json['blueDyeResponse']['serializedData']))
+                : BlueDyeResponse.fromJson(
+                    new Map<String, dynamic>.from(json['blueDyeResponse']))
+            : null,
+        _detailResponseID = json['detailResponseID'],
+        _response = json['response'] != null
+            ? json['response']['serializedData'] != null
+                ? DetailResponse.fromJson(new Map<String, dynamic>.from(
+                    json['response']['serializedData']))
+                : DetailResponse.fromJson(
+                    new Map<String, dynamic>.from(json['response']))
+            : null,
+        _createdAt = json['createdAt'] != null
+            ? amplify_core.TemporalDateTime.fromString(json['createdAt'])
+            : null,
+        _updatedAt = json['updatedAt'] != null
+            ? amplify_core.TemporalDateTime.fromString(json['updatedAt'])
+            : null;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'group': _group,
+        'isBlue': _isBlue,
+        'blueDyeResponse': _blueDyeResponse?.toJson(),
+        'detailResponseID': _detailResponseID,
+        'response': _response?.toJson(),
+        'createdAt': _createdAt?.format(),
+        'updatedAt': _updatedAt?.format()
+      };
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'group': _group,
+        'isBlue': _isBlue,
+        'blueDyeResponse': _blueDyeResponse,
+        'detailResponseID': _detailResponseID,
+        'response': _response,
+        'createdAt': _createdAt,
+        'updatedAt': _updatedAt
+      };
+
+  static final amplify_core
+      .QueryModelIdentifier<BlueDyeResponseLogModelIdentifier>
+      MODEL_IDENTIFIER =
+      amplify_core.QueryModelIdentifier<BlueDyeResponseLogModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final GROUP = amplify_core.QueryField(fieldName: "group");
   static final ISBLUE = amplify_core.QueryField(fieldName: "isBlue");
   static final BLUEDYERESPONSE = amplify_core.QueryField(
-    fieldName: "blueDyeResponse",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'BlueDyeResponse'));
-  static final DETAILRESPONSEID = amplify_core.QueryField(fieldName: "detailResponseID");
+      fieldName: "blueDyeResponse",
+      fieldType: amplify_core.ModelFieldType(
+          amplify_core.ModelFieldTypeEnum.model,
+          ofModelName: 'BlueDyeResponse'));
+  static final DETAILRESPONSEID =
+      amplify_core.QueryField(fieldName: "detailResponseID");
   static final RESPONSE = amplify_core.QueryField(
-    fieldName: "response",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'DetailResponse'));
-  static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
+      fieldName: "response",
+      fieldType: amplify_core.ModelFieldType(
+          amplify_core.ModelFieldTypeEnum.model,
+          ofModelName: 'DetailResponse'));
+  static var schema = amplify_core.Model.defineSchema(
+      define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "BlueDyeResponseLog";
     modelSchemaDefinition.pluralName = "BlueDyeResponseLogs";
-    
+
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
-        authStrategy: amplify_core.AuthStrategy.OWNER,
-        ownerField: "owner",
-        identityClaim: "cognito:username",
-        provider: amplify_core.AuthRuleProvider.USERPOOLS,
-        operations: const [
-          amplify_core.ModelOperation.CREATE,
-          amplify_core.ModelOperation.UPDATE,
-          amplify_core.ModelOperation.DELETE,
-          amplify_core.ModelOperation.READ
-        ]),
+          authStrategy: amplify_core.AuthStrategy.OWNER,
+          ownerField: "owner",
+          identityClaim: "cognito:username",
+          provider: amplify_core.AuthRuleProvider.USERPOOLS,
+          operations: const [
+            amplify_core.ModelOperation.CREATE,
+            amplify_core.ModelOperation.UPDATE,
+            amplify_core.ModelOperation.DELETE,
+            amplify_core.ModelOperation.READ
+          ]),
       amplify_core.AuthRule(
-        authStrategy: amplify_core.AuthStrategy.GROUPS,
-        groupClaim: "cognito:groups",
-        groupsField: "groups",
-        provider: amplify_core.AuthRuleProvider.USERPOOLS,
-        operations: const [
-          amplify_core.ModelOperation.READ
-        ])
+          authStrategy: amplify_core.AuthStrategy.GROUPS,
+          groupClaim: "cognito:groups",
+          groupsField: "groups",
+          provider: amplify_core.AuthRuleProvider.USERPOOLS,
+          operations: const [amplify_core.ModelOperation.READ])
     ];
-    
+
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["blueDyeResponseID"], name: "byBlueResponse")
+      amplify_core.ModelIndex(
+          fields: const ["blueDyeResponseID"], name: "byBlueResponse")
     ];
-    
+
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: BlueDyeResponseLog.GROUP,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
+        key: BlueDyeResponseLog.GROUP,
+        isRequired: false,
+        ofType: amplify_core.ModelFieldType(
+            amplify_core.ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: BlueDyeResponseLog.ISBLUE,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
-    ));
-    
+        key: BlueDyeResponseLog.ISBLUE,
+        isRequired: true,
+        ofType:
+            amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)));
+
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: BlueDyeResponseLog.BLUEDYERESPONSE,
-      isRequired: false,
-      targetNames: ['blueDyeResponseID'],
-      ofModelName: 'BlueDyeResponse'
-    ));
-    
+        key: BlueDyeResponseLog.BLUEDYERESPONSE,
+        isRequired: false,
+        targetNames: ['blueDyeResponseID'],
+        ofModelName: 'BlueDyeResponse'));
+
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: BlueDyeResponseLog.DETAILRESPONSEID,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
+        key: BlueDyeResponseLog.DETAILRESPONSEID,
+        isRequired: false,
+        ofType: amplify_core.ModelFieldType(
+            amplify_core.ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
-      key: BlueDyeResponseLog.RESPONSE,
-      isRequired: false,
-      ofModelName: 'DetailResponse',
-      associatedKey: DetailResponse.ID
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'createdAt',
-      isRequired: false,
-      isReadOnly: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'updatedAt',
-      isRequired: false,
-      isReadOnly: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
-    ));
+        key: BlueDyeResponseLog.RESPONSE,
+        isRequired: false,
+        ofModelName: 'DetailResponse',
+        associatedKey: DetailResponse.ID));
+
+    modelSchemaDefinition.addField(
+        amplify_core.ModelFieldDefinition.nonQueryField(
+            fieldName: 'createdAt',
+            isRequired: false,
+            isReadOnly: true,
+            ofType: amplify_core.ModelFieldType(
+                amplify_core.ModelFieldTypeEnum.dateTime)));
+
+    modelSchemaDefinition.addField(
+        amplify_core.ModelFieldDefinition.nonQueryField(
+            fieldName: 'updatedAt',
+            isRequired: false,
+            isReadOnly: true,
+            ofType: amplify_core.ModelFieldType(
+                amplify_core.ModelFieldTypeEnum.dateTime)));
   });
 }
 
-class _BlueDyeResponseLogModelType extends amplify_core.ModelType<BlueDyeResponseLog> {
+class _BlueDyeResponseLogModelType
+    extends amplify_core.ModelType<BlueDyeResponseLog> {
   const _BlueDyeResponseLogModelType();
-  
+
   @override
   BlueDyeResponseLog fromJson(Map<String, dynamic> jsonData) {
     return BlueDyeResponseLog.fromJson(jsonData);
   }
-  
+
   @override
   String modelName() {
     return 'BlueDyeResponseLog';
@@ -302,41 +358,37 @@ class _BlueDyeResponseLogModelType extends amplify_core.ModelType<BlueDyeRespons
  * This is an auto generated class representing the model identifier
  * of [BlueDyeResponseLog] in your schema.
  */
-class BlueDyeResponseLogModelIdentifier implements amplify_core.ModelIdentifier<BlueDyeResponseLog> {
+class BlueDyeResponseLogModelIdentifier
+    implements amplify_core.ModelIdentifier<BlueDyeResponseLog> {
   final String id;
 
   /** Create an instance of BlueDyeResponseLogModelIdentifier using [id] the primary key. */
-  const BlueDyeResponseLogModelIdentifier({
-    required this.id});
-  
+  const BlueDyeResponseLogModelIdentifier({required this.id});
+
   @override
-  Map<String, dynamic> serializeAsMap() => (<String, dynamic>{
-    'id': id
-  });
-  
+  Map<String, dynamic> serializeAsMap() => (<String, dynamic>{'id': id});
+
   @override
   List<Map<String, dynamic>> serializeAsList() => serializeAsMap()
-    .entries
-    .map((entry) => (<String, dynamic>{ entry.key: entry.value }))
-    .toList();
-  
+      .entries
+      .map((entry) => (<String, dynamic>{entry.key: entry.value}))
+      .toList();
+
   @override
   String serializeAsString() => serializeAsMap().values.join('#');
-  
+
   @override
   String toString() => 'BlueDyeResponseLogModelIdentifier(id: $id)';
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
-    
-    return other is BlueDyeResponseLogModelIdentifier &&
-      id == other.id;
+
+    return other is BlueDyeResponseLogModelIdentifier && id == other.id;
   }
-  
+
   @override
-  int get hashCode =>
-    id.hashCode;
+  int get hashCode => id.hashCode;
 }

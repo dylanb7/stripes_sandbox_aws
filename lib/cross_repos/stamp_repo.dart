@@ -298,10 +298,10 @@ class RemoteStamps extends StampRepo<repo.Response> {
 
       int retrys = 0;
 
-      while (retrys <= maxRetrys &&
+      while (retrys++ <= maxRetrys &&
           (nextBlueToken ?? nextDetailToken ?? nextResponseToken) != null) {
-        retrys++;
         Map<String, dynamic>? blue, res, det;
+
         if (nextBlueToken != null) {
           final gqlBlueDocument =
               '''query FetchBlue(\$subId: ID!, \$limit: Int, \$nextToken: String) {
@@ -356,9 +356,11 @@ class RemoteStamps extends StampRepo<repo.Response> {
           }
         }
         if (nextResponseToken != null) {
-          final earliestResponse = allNewResponses.reduce((value, combine) =>
-              value.stamp.compareTo(combine.stamp) > 0 ? combine : value);
-          if (earliestResponse.stamp.compareTo(earliestTime) > 0) {
+          final Response? earliestResponse = allNewResponses.isEmpty
+              ? null
+              : allNewResponses.reduce((value, combine) =>
+                  value.stamp.compareTo(combine.stamp) > 0 ? combine : value);
+          if ((earliestResponse?.stamp.compareTo(earliestTime) ?? 0) > 0) {
             final gqlResponseDocument =
                 '''query FetchResponse(\$subId: ID!, \$limit: Int, \$nextToken: String) {
             $responseTemplate
@@ -399,6 +401,7 @@ class RemoteStamps extends StampRepo<repo.Response> {
 
       _emit();
     } catch (e) {
+      print("Hit error");
       safePrint(e);
     }
   }

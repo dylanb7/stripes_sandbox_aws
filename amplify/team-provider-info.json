@@ -15,14 +15,12 @@
       "auth": {
         "stripessandbox9f7545ba": {}
       },
-      "api": {
-        "stripessandbox": {}
-      },
       "function": {
         "acceptinvite": {
           "deploymentBucketName": "amplify-stripessandbox-staging-182232-deployment",
           "s3Key": "amplify-builds/acceptinvite-39706e73536566643157-build.zip"
-        }
+        },
+        "inviteuser": {}
       }
     }
   }

@@ -79,6 +79,12 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    },
+    "inviteuser": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
     }
   },
   "parameters": {
