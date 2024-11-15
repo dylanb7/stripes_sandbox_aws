@@ -277,10 +277,10 @@ packages:
     dependency: transitive
     description:
       name: custom_sliding_segmented_control
-      sha256: "53c3e931c3ae1f696085d1ec70ac8e934da836595a9b7d9b88fdd0fcbf2a5574"
+      sha256: eca54f37c999351522a6aa82bf451241df05ae4e231d593f77034615251034eb
       url: "https://pub.dev"
     source: hosted
-    version: "1.8.3"
+    version: "1.8.4"
   dbus:
     dependency: transitive
     description:
@@ -487,10 +487,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_svg
-      sha256: de82e6bf958cec7190fbc1c5298282c851228e35ae2b14e2b103e7f777818c64
+      sha256: "578bd8c508144fdaffd4f77b8ef2d8c523602275cd697cc3db284dbd762ef4ce"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.13"
+    version: "2.0.14"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -873,10 +873,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences
-      sha256: "746e5369a43170c25816cc472ee016d3a66bc13fcf430c0bc41ad7b4b2922051"
+      sha256: "95f9997ca1fb9799d494d0cb2a780fd7be075818d59f00c43832ed112b158a82"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.2"
+    version: "2.3.3"
   shared_preferences_android:
     dependency: transitive
     description:
@@ -1072,7 +1072,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: f2588a56d0f54eb821891532aa61056af1001880
+      resolved-ref: c58fc0a17bb622ee8167cc4b13203342990d39e7
       url: "https://github.com/dylanb7/stripes_ui"
     source: git
     version: "1.0.2"
@@ -1224,10 +1224,10 @@ packages:
     dependency: transitive
     description:
       name: vector_graphics_compiler
-      sha256: "26d520739b7c6b5d2a2b3274427874a8390831fd4cd5bb8cfbd7d913477d3a2e"
+      sha256: ab9ff38fc771e9ee1139320adbe3d18a60327370c218c60752068ebee4b49ab1
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.14"
+    version: "1.1.15"
   vector_math:
     dependency: transitive
     description:

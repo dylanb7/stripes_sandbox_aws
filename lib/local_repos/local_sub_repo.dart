@@ -21,6 +21,10 @@ class LocalSubRepo extends SubUserRepo {
       await db.ready;
       final List<SubUser> users = await db.getSubUsers();
       subUsers = users.map((user) => toLocal(user)).toList();
+      if (subUsers.isEmpty) {
+        await addSubUser(repo.SubUser(
+            name: "robertc", gender: "", birthYear: 0, isControl: false));
+      }
       subStream.add(subUsers);
     }
 
